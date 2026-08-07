@@ -18,7 +18,7 @@ export default async function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white">Wild Wolf Warehouse</h1>
-          <p className="text-neutral-400 mt-1">Sign in to continue</p>
+          <p className="text-neutral-400 mt-1">Pick your name to continue</p>
         </div>
         <LoginForm users={users} />
       </div>

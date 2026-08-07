@@ -1,11 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import {
-  resetPinAction,
-  setUserActiveAction,
-  setUserRoleAction,
-} from "@/lib/actions/admin";
+import { setUserActiveAction, setUserRoleAction } from "@/lib/actions/admin";
 
 type Role = "ADMIN" | "MANAGER" | "EMPLOYEE";
 
@@ -56,66 +52,5 @@ export function ActiveToggle({ userId, active }: { userId: string; active: boole
     >
       {value ? "Active" : "Deactivated"}
     </button>
-  );
-}
-
-export function ResetPinControl({ userId }: { userId: string }) {
-  const [open, setOpen] = useState(false);
-  const [pin, setPin] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="text-sm text-orange-400 hover:text-orange-300 font-medium"
-      >
-        Reset PIN
-      </button>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <input
-        type="text"
-        inputMode="numeric"
-        maxLength={8}
-        value={pin}
-        onChange={(e) => setPin(e.target.value)}
-        placeholder="New PIN"
-        className="w-24 rounded-md bg-neutral-900 border border-neutral-700 text-white text-sm px-2 py-1.5"
-      />
-      <button
-        type="button"
-        disabled={pending || pin.length < 4}
-        onClick={() => {
-          startTransition(async () => {
-            const result = await resetPinAction(userId, pin);
-            setMessage(result.error ?? result.success ?? null);
-            if (!result.error) {
-              setPin("");
-              setOpen(false);
-            }
-          });
-        }}
-        className="text-sm px-3 py-1.5 rounded-md bg-orange-600 hover:bg-orange-500 disabled:opacity-60 text-white font-medium"
-      >
-        Save
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          setOpen(false);
-          setMessage(null);
-        }}
-        className="text-sm text-neutral-500 hover:text-neutral-300"
-      >
-        Cancel
-      </button>
-      {message && <span className="text-xs text-red-400">{message}</span>}
-    </div>
   );
 }

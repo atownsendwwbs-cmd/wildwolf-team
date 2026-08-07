@@ -2,7 +2,7 @@ import AppShell from "@/components/app-shell";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import AddUserForm from "./add-user-form";
-import { RoleSelect, ActiveToggle, ResetPinControl } from "./user-row-controls";
+import { RoleSelect, ActiveToggle } from "./user-row-controls";
 
 export default async function AdminUsersPage() {
   const currentUser = await requireRole(["ADMIN"]);
@@ -12,6 +12,10 @@ export default async function AdminUsersPage() {
   return (
     <AppShell>
       <h1 className="text-xl font-bold text-white mb-6">Team</h1>
+      <p className="text-sm text-neutral-400 mb-6">
+        Anyone active here shows up on the sign-in screen — no PIN, they just pick their name.
+        Deactivate someone to remove them from the list.
+      </p>
 
       <div className="mb-6">
         <AddUserForm />
@@ -24,7 +28,6 @@ export default async function AdminUsersPage() {
               <th className="text-left px-4 py-2.5 font-medium">Name</th>
               <th className="text-left px-4 py-2.5 font-medium">Role</th>
               <th className="text-left px-4 py-2.5 font-medium">Status</th>
-              <th className="text-left px-4 py-2.5 font-medium">PIN</th>
             </tr>
           </thead>
           <tbody>
@@ -41,9 +44,6 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="px-4 py-3">
                   <ActiveToggle userId={u.id} active={u.active} />
-                </td>
-                <td className="px-4 py-3">
-                  <ResetPinControl userId={u.id} />
                 </td>
               </tr>
             ))}

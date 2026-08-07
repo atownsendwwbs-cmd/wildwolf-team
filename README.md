@@ -8,11 +8,11 @@ A lightweight internal app for the production floor: a daily brief for the team,
 - **Low Inventory & Supply Alerts** — Anyone can flag low finished goods, raw materials, or warehouse supplies (boxes, tape, thermal labels, gloves, bags, shipping labels, buckets, bucket lids, water, soap, paper towels, toilet paper, etc. — plus a free-text field for anything else). Alerts carry an urgency level and get marked "restocked" by a manager/admin.
 - **End of Day Report** — Employees log what was packed, what got sorted out/rejected (and why), where they left off for the next shift, and any notes for the day.
 - **Dashboard** — One page showing today's brief, open alerts, and recent end-of-day reports.
-- **Team management (admin only)** — Add people, set roles (Employee / Manager / Admin), reset PINs, deactivate accounts.
+- **Team management (admin only)** — Add people, set roles (Employee / Manager / Admin), deactivate accounts.
 
 ## Sign-in
 
-No emails or passwords — each person picks their name from a list and enters a short PIN. Good for a shared warehouse tablet or kiosk. Manage names/PINs from **Team** (visible to Admins).
+Open access, no passwords or PINs — each person just picks their name from a list. Good for a shared warehouse tablet or kiosk. Manage who's on the list (and their role) from **Team** (visible to Admins); deactivating someone removes them from the sign-in list.
 
 ## Getting started (local)
 
@@ -30,18 +30,18 @@ Open http://localhost:3000.
 
 ### Starter accounts (from `npm run db:seed`)
 
-| Name | Role | PIN |
-| --- | --- | --- |
-| Owner | Admin | 1234 |
-| Production Manager | Manager | 1111 |
-| Warehouse Employee | Employee | 2222 |
+| Name | Role |
+| --- | --- |
+| Owner | Admin |
+| Production Manager | Manager |
+| Warehouse Employee | Employee |
 
-**Change these PINs (or deactivate/rename the accounts) from Team once you're set up** — sign in as Owner and go to the Team page in the nav.
+These are placeholders so there's something to sign in with. **Sign in as Owner, then go to Team and rename/replace them with your actual people** (or just add your real team alongside them and deactivate the placeholders).
 
 Roles:
 - **Employee** — can submit low-inventory alerts and end-of-day reports, and read daily briefs.
 - **Manager** — everything an Employee can do, plus posting daily briefs and marking inventory alerts as restocked.
-- **Admin** — everything a Manager can do, plus managing the team (add people, change roles, reset PINs, deactivate accounts).
+- **Admin** — everything a Manager can do, plus managing the team (add people, change roles, deactivate accounts).
 
 ## Deploying to Vercel
 

@@ -29,18 +29,6 @@ export default function AddUserForm() {
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-neutral-400 mb-1">PIN</label>
-        <input
-          type="text"
-          name="pin"
-          inputMode="numeric"
-          required
-          maxLength={8}
-          placeholder="4-8 digits"
-          className="rounded-lg bg-neutral-950 border border-neutral-700 text-white px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-      <div>
         <label className="block text-xs font-medium text-neutral-400 mb-1">Role</label>
         <select
           name="role"
