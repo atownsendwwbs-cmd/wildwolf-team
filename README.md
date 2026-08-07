@@ -16,10 +16,12 @@ No emails or passwords — each person picks their name from a list and enters a
 
 ## Getting started (local)
 
+Requires a Postgres database (local install, Docker, or just point at your hosted one — see Deploying below).
+
 ```bash
 npm install
-cp .env.example .env      # edit SESSION_SECRET to a long random string
-npx prisma migrate dev    # creates the SQLite database
+cp .env.example .env      # set DATABASE_URL to your Postgres connection string, SESSION_SECRET to a long random string
+npx prisma migrate dev    # creates the schema
 npm run db:seed           # creates starter accounts (see below)
 npm run dev
 ```
@@ -41,16 +43,22 @@ Roles:
 - **Manager** — everything an Employee can do, plus posting daily briefs and marking inventory alerts as restocked.
 - **Admin** — everything a Manager can do, plus managing the team (add people, change roles, reset PINs, deactivate accounts).
 
-## Deploying
+## Deploying to Vercel
 
-This is a standard Next.js app, so it can run anywhere Node.js runs. Two straightforward options:
+The database is Postgres (Vercel's serverless functions don't have a persistent filesystem, so SQLite isn't an option in production). `npm run build` already runs `prisma migrate deploy` before `next build`, so every deploy applies any new migrations automatically as long as `DATABASE_URL` is set.
 
-**Vercel** — connect this repo, set `DATABASE_URL` and `SESSION_SECRET` as environment variables, and deploy. Vercel's filesystem isn't persistent between deploys, so for production on Vercel switch the Prisma datasource from SQLite to a hosted Postgres database (e.g. Vercel Postgres, Neon, Supabase): update `provider = "postgresql"` in `prisma/schema.prisma`, swap the `@prisma/adapter-better-sqlite3` usage in `lib/db.ts`/`prisma/seed.ts` for `@prisma/adapter-pg`, point `DATABASE_URL` at the Postgres connection string, then run `npx prisma migrate deploy`.
+1. **Create the database.** In the Vercel dashboard, open (or create) this project → **Storage** tab → **Create Database** → **Postgres** (Neon-backed). This automatically adds connection env vars to the project.
+2. **Point `DATABASE_URL` at it.** The Postgres integration typically adds vars named `POSTGRES_URL` / `POSTGRES_PRISMA_URL` / `DATABASE_URL` (naming has changed across Vercel's Postgres offerings) — in **Settings → Environment Variables**, make sure a var named exactly `DATABASE_URL` exists and holds the **pooled** connection string (the one meant for serverless — usually the one already named `DATABASE_URL` or `POSTGRES_PRISMA_URL`). If it's only under a different name, add `DATABASE_URL` yourself with that same value.
+3. **Add `SESSION_SECRET`.** Settings → Environment Variables → add `SESSION_SECRET` with a long random string (e.g. run `openssl rand -base64 32` locally and paste the output). This signs the login session cookie — use a different value than your local `.env`.
+4. **Import the repo.** New Project → import this GitHub repo → deploy. Vercel auto-detects Next.js; no build command overrides needed.
+5. **Seed the starter accounts.** From your machine, run `DATABASE_URL="<the same pooled connection string>" npm run db:seed` once against the production database to create the Owner/Manager/Employee accounts listed above. (Or add users straight from the **Team** page after signing in with any account you create by hand.)
 
-**Your own server** — `npm run build && npm start` behind a reverse proxy (nginx/Caddy). The SQLite database file (`dev.db` by default) just needs to live on persistent disk; back it up like any other file.
+Every future `git push` to this branch redeploys automatically and re-applies any new Prisma migrations.
 
-Either way, set a strong, unique `SESSION_SECRET` in production — it signs the login session cookie.
+### Other hosting
+
+Since this is a standard Next.js app, it'll run anywhere Node.js does: `npm run build && npm start` behind a reverse proxy (nginx/Caddy), pointed at any Postgres instance via `DATABASE_URL`.
 
 ## Tech stack
 
-Next.js (App Router) + TypeScript + Tailwind CSS, Prisma ORM (SQLite by default), server actions for all writes, signed JWT session cookie for auth.
+Next.js (App Router) + TypeScript + Tailwind CSS, Prisma ORM (Postgres), server actions for all writes, signed JWT session cookie for auth.
