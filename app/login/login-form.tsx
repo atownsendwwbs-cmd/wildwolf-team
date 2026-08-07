@@ -12,7 +12,7 @@ export default function LoginForm({ users }: { users: UserOption[] }) {
   const [selected, setSelected] = useState("");
 
   return (
-    <form action={formAction} className="bg-neutral-900 rounded-2xl p-6 space-y-5 border border-neutral-800">
+    <form action={formAction} className="bg-neutral-900 rounded-lg p-6 space-y-5 border border-neutral-800">
       <div>
         <label className="block text-sm font-medium text-neutral-300 mb-2">Your name</label>
         <select

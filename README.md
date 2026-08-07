@@ -4,7 +4,7 @@ A lightweight internal app for the production floor: a daily brief for the team,
 
 ## Features
 
-- **Daily Brief** — Managers/admins post the day's priorities, work orders to focus on, and anything the team should watch for. Everyone can read the history.
+- **Daily Brief** — the focal point of the dashboard. Managers/admins post the day's priorities, work orders to focus on, and anything the team should watch for, in English or Spanish — the app auto-translates it to the other language on post (best-effort, via a free translation API; if translation fails for any reason, the original text is shown instead so nothing blocks). Readers can flip between EN/ES with a toggle. Everyone can read the history.
 - **Low Inventory & Supply Alerts** — Anyone can flag low finished goods, raw materials, or warehouse supplies (boxes, tape, thermal labels, gloves, bags, shipping labels, buckets, bucket lids, water, soap, paper towels, toilet paper, etc. — plus a free-text field for anything else). Alerts carry an urgency level and get marked "restocked" by a manager/admin.
 - **End of Day Report** — Employees log what was packed, what got sorted out/rejected (and why), where they left off for the next shift, and any notes for the day.
 - **Dashboard** — One page showing today's brief, open alerts, and recent end-of-day reports.
@@ -61,4 +61,4 @@ Since this is a standard Next.js app, it'll run anywhere Node.js does: `npm run 
 
 ## Tech stack
 
-Next.js (App Router) + TypeScript + Tailwind CSS, Prisma ORM (Postgres), server actions for all writes, signed JWT session cookie for auth.
+Next.js (App Router) + TypeScript + Tailwind CSS, Prisma ORM (Postgres), server actions for all writes, signed JWT session cookie for auth. Theme colors ("Timber & Amber" — warm charcoal + vivid amber accent) live in `app/globals.css` as Tailwind v4 theme tokens, overriding the `neutral`/`orange`/`sky` scales so they apply everywhere automatically. Daily Brief translation runs through MyMemory's free translation API (`lib/translate.ts`) — no API key required, but it's a best-effort public service with modest rate limits, worth swapping for a paid provider (DeepL, Google Cloud Translation) if translation volume grows.

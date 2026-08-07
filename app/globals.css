@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  "Timber & Amber" theme: warm charcoal (not neutral gray) as the base,
+  a vivid amber-orange as the primary accent, and a cool steel-blue as
+  the secondary accent for informational/manager-tier elements.
+  These override Tailwind's built-in `neutral`, `orange`, and `sky`
+  scales, so existing `bg-neutral-900`, `text-orange-400`, etc. classes
+  across the app pick up the new palette automatically.
+*/
+@theme {
+  --color-neutral-50: #f7f4ef;
+  --color-neutral-100: #ede7dc;
+  --color-neutral-200: #d9cfbd;
+  --color-neutral-300: #b8ab93;
+  --color-neutral-400: #8f8168;
+  --color-neutral-500: #6b5f4c;
+  --color-neutral-600: #4a4132;
+  --color-neutral-700: #332c22;
+  --color-neutral-800: #221d16;
+  --color-neutral-900: #17130e;
+  --color-neutral-950: #0e0b07;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-orange-50: #fff6e8;
+  --color-orange-100: #ffe7c2;
+  --color-orange-200: #ffcc84;
+  --color-orange-300: #ffab45;
+  --color-orange-400: #ff8f1f;
+  --color-orange-500: #f37a08;
+  --color-orange-600: #db6600;
+  --color-orange-700: #b34f02;
+  --color-orange-800: #8a3d08;
+  --color-orange-900: #6b3009;
+  --color-orange-950: #3d1a03;
+
+  --color-sky-50: #eef6fb;
+  --color-sky-100: #d8ebf5;
+  --color-sky-200: #b3d6ea;
+  --color-sky-300: #82b9da;
+  --color-sky-400: #5697c4;
+  --color-sky-500: #3a7cac;
+  --color-sky-600: #2c6389;
+  --color-sky-700: #274f6c;
+  --color-sky-800: #234058;
+  --color-sky-900: #1c2f40;
+  --color-sky-950: #121e29;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-neutral-950);
+  color: var(--color-neutral-100);
 }

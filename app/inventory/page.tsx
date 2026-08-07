@@ -69,7 +69,7 @@ export default async function InventoryPage({
           {alerts.map((alert) => (
             <li
               key={alert.id}
-              className="rounded-xl border border-neutral-800 bg-neutral-900 p-4"
+              className="rounded-lg border border-neutral-800 bg-neutral-900 p-4"
             >
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div>

@@ -21,7 +21,7 @@ export default async function AdminUsersPage() {
         <AddUserForm />
       </div>
 
-      <div className="rounded-xl border border-neutral-800 overflow-hidden">
+      <div className="rounded-lg border border-neutral-800 overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-neutral-900 text-neutral-400 text-xs uppercase tracking-wide">
             <tr>

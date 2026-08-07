@@ -37,7 +37,7 @@ export default async function EodListPage() {
               <li key={report.id}>
                 <Link
                   href={`/eod/${report.id}`}
-                  className="block rounded-xl border border-neutral-800 bg-neutral-900 p-4 hover:border-neutral-700 transition-colors"
+                  className="block rounded-lg border border-neutral-800 bg-neutral-900 p-4 hover:border-neutral-700 transition-colors"
                 >
                   <div className="flex items-baseline justify-between gap-2">
                     <h2 className="font-semibold text-white">{report.author.name}</h2>

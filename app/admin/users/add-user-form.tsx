@@ -16,7 +16,7 @@ export default function AddUserForm() {
         formAction(formData);
         formRef.current?.reset();
       }}
-      className="rounded-xl border border-neutral-800 bg-neutral-900 p-4 flex flex-wrap items-end gap-3"
+      className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 flex flex-wrap items-end gap-3"
     >
       <div>
         <label className="block text-xs font-medium text-neutral-400 mb-1">Name</label>

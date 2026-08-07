@@ -54,7 +54,7 @@ export default function AlertForm() {
                 type="button"
                 key={s}
                 onClick={() => setItemName(s)}
-                className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
+                className={`text-sm px-3 py-1.5 rounded-md border transition-colors ${
                   itemName === s
                     ? "border-orange-600 bg-orange-950/40 text-orange-300"
                     : "border-neutral-700 text-neutral-300 hover:bg-neutral-800"

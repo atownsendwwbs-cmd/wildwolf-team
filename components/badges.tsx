@@ -12,7 +12,7 @@ const URGENCY_STYLES: Record<string, string> = {
 
 export function CategoryBadge({ category }: { category: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-neutral-700 bg-neutral-800 px-2.5 py-0.5 text-xs text-neutral-300">
+    <span className="inline-flex items-center rounded-md border border-neutral-700 bg-neutral-800 px-2.5 py-0.5 text-xs text-neutral-300">
       {CATEGORY_LABELS[category] ?? category}
     </span>
   );
@@ -21,7 +21,7 @@ export function CategoryBadge({ category }: { category: string }) {
 export function UrgencyBadge({ urgency }: { urgency: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+      className={`inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium ${
         URGENCY_STYLES[urgency] ?? URGENCY_STYLES.LOW
       }`}
     >

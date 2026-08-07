@@ -15,10 +15,14 @@ export default async function AppShell({ children }: { children: React.ReactNode
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-neutral-800 bg-neutral-900/60 sticky top-0 z-10 backdrop-blur">
+        <div className="h-0.5 bg-gradient-to-r from-orange-600 via-orange-400 to-orange-600" />
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <Link href="/" className="font-bold text-white shrink-0">
-              🐺 Wild Wolf
+            <Link href="/" className="flex items-center gap-2 font-bold text-white shrink-0 tracking-tight">
+              <span className="text-lg">🐺</span>
+              <span>
+                Wild <span className="text-orange-400">Wolf</span>
+              </span>
             </Link>
             <nav className="hidden sm:flex items-center gap-1">
               {NAV_LINKS.map((link) => (

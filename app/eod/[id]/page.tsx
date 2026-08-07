@@ -50,7 +50,7 @@ export default async function EodDetailPage({
 
   return (
     <AppShell>
-      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-6 space-y-6">
+      <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-6 space-y-6">
         <div>
           <h1 className="text-xl font-bold text-white">{report.author.name}&apos;s end-of-day report</h1>
           <p className="text-sm text-neutral-500 mt-1">{formatDateTime(report.date)}</p>

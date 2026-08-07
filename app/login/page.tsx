@@ -17,7 +17,10 @@ export default async function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-neutral-950 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">Wild Wolf Warehouse</h1>
+          <div className="text-4xl mb-3">🐺</div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Wild <span className="text-orange-400">Wolf</span> Warehouse
+          </h1>
           <p className="text-neutral-400 mt-1">Pick your name to continue</p>
         </div>
         <LoginForm users={users} />
