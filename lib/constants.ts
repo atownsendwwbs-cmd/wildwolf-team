@@ -1,0 +1,14 @@
+export const COMMON_SUPPLIES = [
+  "Boxes",
+  "Packing tape",
+  "Thermal labels",
+  "Gloves",
+  "Poly bags",
+  "Shipping labels",
+  "Buckets",
+  "Bucket lids",
+  "Water",
+  "Hand soap",
+  "Paper towels",
+  "Toilet paper",
+] as const;
