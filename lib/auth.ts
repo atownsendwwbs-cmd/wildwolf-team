@@ -69,10 +69,30 @@ export async function getCurrentUser() {
   return user;
 }
 
+export const AUTO_LOGIN_USER_NAME = "Admin";
+
+export async function getOrCreateAutoUser() {
+  const existing = await db.user.findFirst({
+    where: { active: true },
+    orderBy: { createdAt: "asc" },
+  });
+  if (existing) return existing;
+
+  return db.user.create({
+    data: { name: AUTO_LOGIN_USER_NAME, role: "ADMIN" },
+  });
+}
+
+// TEMPORARY: sign-in is disabled for now — anyone hitting the app with
+// no session is bounced through /api/auto-login, which signs them in as
+// the first active user (or an auto-created "Admin" account if there
+// are none yet) and sends them back. Remove this and restore
+// `redirect("/login")` once real accounts are seeded and you want
+// people to pick their name again.
 export async function requireUser() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect("/login");
+    redirect("/api/auto-login");
   }
   return user;
 }
