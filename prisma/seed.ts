@@ -17,10 +17,14 @@ async function upsertUser(name: string, role: "ADMIN" | "MANAGER" | "EMPLOYEE") 
 
 async function main() {
   await upsertUser("Owner", "ADMIN");
-  await upsertUser("Production Manager", "MANAGER");
-  await upsertUser("Warehouse Employee", "EMPLOYEE");
+  await upsertUser("Desire", "MANAGER");
+  await upsertUser("Susy", "MANAGER");
+  await upsertUser("Cynthia", "MANAGER");
+  await upsertUser("Alec", "ADMIN");
+  await upsertUser("Chris", "ADMIN");
+  await upsertUser("Keiclyn", "EMPLOYEE");
   console.log(
-    "\nSeed complete. Sign in as Owner, then rename/replace these placeholder accounts (and add your real team) from Team."
+    "\nSeed complete. Sign in as Owner (rename it from Team if you'd like), and adjust roles for anyone above from Team."
   );
 }
 
