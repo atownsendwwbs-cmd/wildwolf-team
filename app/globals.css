@@ -52,4 +52,8 @@
 body {
   background: var(--color-neutral-950);
   color: var(--color-neutral-100);
+  /* Keep content clear of notches / home indicators when installed as a
+     standalone app (no browser chrome to provide that spacing itself). */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }

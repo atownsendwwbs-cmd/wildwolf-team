@@ -9,6 +9,7 @@ A lightweight internal app for the production floor: a daily brief for the team,
 - **End of Day Report** — Employees log what was packed, what got sorted out/rejected (and why), where they left off for the next shift, and any notes for the day.
 - **Dashboard** — One page showing today's brief, open alerts, and recent end-of-day reports.
 - **Team management (admin only)** — Add people, set roles (Employee / Manager / Admin), deactivate accounts.
+- **Installable on phones** — the app is a Progressive Web App: anyone can add it to their home screen (Android shows a native "Install" prompt; iOS shows instructions for Share → Add to Home Screen) and it opens full-screen like a native app, with its own icon.
 
 ## Sign-in
 
@@ -58,6 +59,15 @@ Every future `git push` to this branch redeploys automatically and re-applies an
 ### Other hosting
 
 Since this is a standard Next.js app, it'll run anywhere Node.js does: `npm run build && npm start` behind a reverse proxy (nginx/Caddy), pointed at any Postgres instance via `DATABASE_URL`.
+
+## Installing on a phone
+
+The app is a Progressive Web App (PWA) — no App Store/Play Store listing needed.
+
+- **iPhone (Safari):** open the site, tap the **Share** icon, then **Add to Home Screen**. The app shows a reminder banner with these steps automatically until dismissed.
+- **Android (Chrome):** open the site and tap **Install** on the banner that appears (or use Chrome's menu → **Install app**).
+
+Once installed, it opens full-screen with its own icon — no address bar, no need to remember a URL. The manifest and icons are defined in `app/manifest.ts` and `public/icons/` (regenerate them with `node scripts/generate-icons.mjs` if you want a different icon design).
 
 ## Tech stack
 

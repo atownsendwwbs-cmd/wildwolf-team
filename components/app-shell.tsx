@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions/auth";
+import InstallPrompt from "@/components/install-prompt";
 
 const NAV_LINKS = [
   { href: "/", label: "Dashboard" },
@@ -80,6 +81,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
           )}
         </nav>
       </header>
+      <InstallPrompt />
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6">{children}</main>
     </div>
   );
