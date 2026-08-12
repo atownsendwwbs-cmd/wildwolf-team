@@ -8,12 +8,14 @@ A lightweight internal app for the production floor: a daily brief for the team,
 - **Low Inventory & Supply Alerts** — Anyone can flag low finished goods, raw materials, or warehouse supplies (boxes, tape, thermal labels, gloves, bags, shipping labels, buckets, bucket lids, water, soap, paper towels, toilet paper, etc. — plus a free-text field for anything else). Alerts carry an urgency level and get marked "restocked" by a manager/admin.
 - **End of Day Report** — Employees log what was packed, what got sorted out/rejected (and why), where they left off for the next shift, and any notes for the day.
 - **Dashboard** — One page showing today's brief, open alerts, and recent end-of-day reports.
-- **Team management (admin only)** — Add people, set roles (Employee / Manager / Admin), deactivate accounts.
+- **Team management (admin only)** — Add people, set roles (Employee / Manager / Admin), assign/reset PINs, rename profiles, deactivate accounts.
 - **Installable on phones** — the app is a Progressive Web App: anyone can add it to their home screen (Android shows a native "Install" prompt; iOS shows instructions for Share → Add to Home Screen) and it opens full-screen like a native app, with its own icon.
 
 ## Sign-in
 
-Open access, no passwords or PINs — each person just picks their name from a list. Good for a shared warehouse tablet or kiosk. Manage who's on the list (and their role) from **Team** (visible to Admins); deactivating someone removes them from the sign-in list.
+The app itself is open — anyone with the link can browse the dashboard, briefs, inventory alerts, and end-of-day reports without signing in. Posting anything (a brief, an inventory alert, an end-of-day report) or managing the team requires signing in with a name + 4-digit PIN, so every report is attributed to a real person. Set up who can sign in (and their PIN) from **Team**, visible once an admin is signed in; deactivating someone revokes their sign-in access (browsing stays open regardless).
+
+The very first time the app is used — before any PIN exists anywhere — it auto-signs you in as an admin so you can reach Team and set up your own name + PIN. That bootstrap path closes itself the moment any PIN is set.
 
 ## Getting started (local)
 
@@ -31,18 +33,21 @@ Open http://localhost:3000.
 
 ### Starter accounts (from `npm run db:seed`)
 
-| Name | Role |
-| --- | --- |
-| Owner | Admin |
-| Production Manager | Manager |
-| Warehouse Employee | Employee |
+| Name | Role | PIN |
+| --- | --- | --- |
+| Alec Townsend | Admin | 1299 |
+| Desire | Manager | 1111 |
+| Susy | Manager | 2222 |
+| Cynthia | Manager | 3333 |
+| Chris | Admin | 4444 |
+| Keiclyn | Employee | 5555 |
 
-These are placeholders so there's something to sign in with. **Sign in as Owner, then go to Team and rename/replace them with your actual people** (or just add your real team alongside them and deactivate the placeholders).
+These match the real team — **change PINs you don't recognize from Team**, and add/rename/deactivate anyone as needed.
 
-Roles:
-- **Employee** — can submit low-inventory alerts and end-of-day reports, and read daily briefs.
+Roles (browsing is open to everyone regardless of role or sign-in status):
+- **Employee** — can sign in to submit low-inventory alerts and end-of-day reports.
 - **Manager** — everything an Employee can do, plus posting daily briefs and marking inventory alerts as restocked.
-- **Admin** — everything a Manager can do, plus managing the team (add people, change roles, deactivate accounts).
+- **Admin** — everything a Manager can do, plus managing the team (add people, change roles, assign/reset PINs, rename profiles, deactivate accounts).
 
 ## Deploying to Vercel
 
@@ -52,7 +57,7 @@ The database is Postgres (Vercel's serverless functions don't have a persistent 
 2. **Point `DATABASE_URL` at it.** The Postgres integration typically adds vars named `POSTGRES_URL` / `POSTGRES_PRISMA_URL` / `DATABASE_URL` (naming has changed across Vercel's Postgres offerings) — in **Settings → Environment Variables**, make sure a var named exactly `DATABASE_URL` exists and holds the **pooled** connection string (the one meant for serverless — usually the one already named `DATABASE_URL` or `POSTGRES_PRISMA_URL`). If it's only under a different name, add `DATABASE_URL` yourself with that same value.
 3. **Add `SESSION_SECRET`.** Settings → Environment Variables → add `SESSION_SECRET` with a long random string (e.g. run `openssl rand -base64 32` locally and paste the output). This signs the login session cookie — use a different value than your local `.env`.
 4. **Import the repo.** New Project → import this GitHub repo → deploy. Vercel auto-detects Next.js; no build command overrides needed.
-5. **Seed the starter accounts.** From your machine, run `DATABASE_URL="<the same pooled connection string>" npm run db:seed` once against the production database to create the Owner/Manager/Employee accounts listed above. (Or add users straight from the **Team** page after signing in with any account you create by hand.)
+5. **Set up sign-in.** You don't need to run anything for this — the first visit to the deployed app auto-signs you in as an admin (since no PIN exists yet anywhere) so you can go to **Team** and set your real name + PIN, then add the rest of the team. (You can still run `DATABASE_URL="<the same pooled connection string>" npm run db:seed` from your machine instead if you'd rather seed the accounts listed above in one shot.)
 
 Every future `git push` to this branch redeploys automatically and re-applies any new Prisma migrations.
 

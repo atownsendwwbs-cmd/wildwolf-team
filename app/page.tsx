@@ -3,12 +3,12 @@ import AppShell from "@/components/app-shell";
 import BilingualBrief from "@/components/bilingual-brief";
 import { CategoryBadge, UrgencyBadge } from "@/components/badges";
 import { db } from "@/lib/db";
-import { requireUser, MANAGER_ROLES } from "@/lib/auth";
+import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { formatDateTime, isSameDay } from "@/lib/format";
 
 export default async function DashboardPage() {
-  const user = await requireUser();
-  const canPostBrief = MANAGER_ROLES.includes(user.role);
+  const user = await getCurrentUser();
+  const canPostBrief = !!user && MANAGER_ROLES.includes(user.role);
 
   const [latestBrief, openAlerts, recentReports] = await Promise.all([
     db.dailyBrief.findFirst({

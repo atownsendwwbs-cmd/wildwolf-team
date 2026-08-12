@@ -2,7 +2,7 @@ import AppShell from "@/components/app-shell";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import AddUserForm from "./add-user-form";
-import { RoleSelect, ActiveToggle } from "./user-row-controls";
+import { RoleSelect, ActiveToggle, NameEditor, ResetPinControl } from "./user-row-controls";
 
 export default async function AdminUsersPage() {
   const currentUser = await requireRole(["ADMIN"]);
@@ -13,8 +13,9 @@ export default async function AdminUsersPage() {
     <AppShell>
       <h1 className="text-xl font-bold text-white mb-6">Team</h1>
       <p className="text-sm text-neutral-400 mb-6">
-        Anyone active here shows up on the sign-in screen — no PIN, they just pick their name.
-        Deactivate someone to remove them from the list.
+        Anyone can browse the app without signing in. People listed here with a PIN can sign in to
+        post briefs, report inventory, submit end-of-day reports, or manage the team — so you know
+        who did what. Deactivate someone to remove their sign-in access.
       </p>
 
       <div className="mb-6">
@@ -28,13 +29,14 @@ export default async function AdminUsersPage() {
               <th className="text-left px-4 py-2.5 font-medium">Name</th>
               <th className="text-left px-4 py-2.5 font-medium">Role</th>
               <th className="text-left px-4 py-2.5 font-medium">Status</th>
+              <th className="text-left px-4 py-2.5 font-medium">PIN</th>
             </tr>
           </thead>
           <tbody>
             {users.map((u) => (
               <tr key={u.id} className="border-t border-neutral-800">
-                <td className="px-4 py-3 text-white font-medium">
-                  {u.name}
+                <td className="px-4 py-3">
+                  <NameEditor userId={u.id} name={u.name} />
                   {u.id === currentUser.id && (
                     <span className="text-neutral-500 font-normal"> (you)</span>
                   )}
@@ -44,6 +46,9 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="px-4 py-3">
                   <ActiveToggle userId={u.id} active={u.active} />
+                </td>
+                <td className="px-4 py-3">
+                  <ResetPinControl userId={u.id} hasPin={!!u.pinHash} />
                 </td>
               </tr>
             ))}

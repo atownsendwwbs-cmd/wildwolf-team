@@ -83,18 +83,27 @@ export async function getOrCreateAutoUser() {
   });
 }
 
-// TEMPORARY: sign-in is disabled for now — anyone hitting the app with
-// no session is bounced through /api/auto-login, which signs them in as
-// the first active user (or an auto-created "Admin" account if there
-// are none yet) and sends them back. Remove this and restore
-// `redirect("/login")` once real accounts are seeded and you want
-// people to pick their name again.
+// Bootstrap mode: as long as nobody in the system has a PIN set yet,
+// there's no way for anyone to sign in "for real" — so the very first
+// visit auto-logs in as an admin (via /api/auto-login) so someone can
+// reach Team and set up their name + PIN. The moment any PIN exists,
+// this closes and everyone needs a real name + PIN to sign in.
+async function isBootstrapEligible() {
+  const pinnedUserCount = await db.user.count({ where: { pinHash: { not: null } } });
+  return pinnedUserCount === 0;
+}
+
+// Viewing the app (dashboard, briefs, alerts, reports) never requires
+// signing in — use getCurrentUser() directly for read-only pages. This
+// is only for pages/actions that write data or manage the team.
 export async function requireUser() {
   const user = await getCurrentUser();
-  if (!user) {
+  if (user) return user;
+
+  if (await isBootstrapEligible()) {
     redirect("/api/auto-login");
   }
-  return user;
+  redirect("/login");
 }
 
 export async function requireRole(roles: Role[]) {

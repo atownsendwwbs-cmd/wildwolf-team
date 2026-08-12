@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import AppShell from "@/components/app-shell";
 import BilingualBrief from "@/components/bilingual-brief";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 
 export default async function BriefDetailPage({
@@ -10,7 +9,6 @@ export default async function BriefDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireUser();
   const { id } = await params;
 
   const brief = await db.dailyBrief.findUnique({

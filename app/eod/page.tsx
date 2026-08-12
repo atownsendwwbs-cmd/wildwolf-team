@@ -1,13 +1,10 @@
 import Link from "next/link";
 import AppShell from "@/components/app-shell";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { parseLineItemsJson } from "@/lib/eod";
 
 export default async function EodListPage() {
-  await requireUser();
-
   const reports = await db.endOfDayReport.findMany({
     orderBy: { date: "desc" },
     include: { author: { select: { name: true } } },

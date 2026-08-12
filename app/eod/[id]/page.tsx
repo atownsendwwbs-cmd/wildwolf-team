@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import AppShell from "@/components/app-shell";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { parseLineItemsJson, type LineItem } from "@/lib/eod";
 
@@ -35,7 +34,6 @@ export default async function EodDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireUser();
   const { id } = await params;
 
   const report = await db.endOfDayReport.findUnique({

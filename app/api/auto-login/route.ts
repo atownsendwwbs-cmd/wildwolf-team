@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSession, getCurrentUser, getOrCreateAutoUser } from "@/lib/auth";
 
-// TEMPORARY: see the comment on requireUser() in lib/auth.ts.
+// Bootstrap-only entry point — requireUser() only redirects here while no
+// one in the system has a PIN set yet (see isBootstrapEligible in lib/auth.ts).
 export async function GET(request: NextRequest) {
   const existing = await getCurrentUser();
   if (!existing) {

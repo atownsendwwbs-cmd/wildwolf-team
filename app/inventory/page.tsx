@@ -2,7 +2,7 @@ import Link from "next/link";
 import AppShell from "@/components/app-shell";
 import { CategoryBadge, UrgencyBadge } from "@/components/badges";
 import { db } from "@/lib/db";
-import { requireUser, MANAGER_ROLES } from "@/lib/auth";
+import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { resolveAlertAction, reopenAlertAction } from "@/lib/actions/inventory";
 
@@ -11,8 +11,8 @@ export default async function InventoryPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
-  const user = await requireUser();
-  const canResolve = MANAGER_ROLES.includes(user.role);
+  const user = await getCurrentUser();
+  const canResolve = !!user && MANAGER_ROLES.includes(user.role);
   const { status } = await searchParams;
   const filter = status === "resolved" ? "RESOLVED" : "OPEN";
 

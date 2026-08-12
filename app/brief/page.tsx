@@ -1,12 +1,12 @@
 import Link from "next/link";
 import AppShell from "@/components/app-shell";
 import { db } from "@/lib/db";
-import { requireUser, MANAGER_ROLES } from "@/lib/auth";
+import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 
 export default async function BriefListPage() {
-  const user = await requireUser();
-  const canPost = MANAGER_ROLES.includes(user.role);
+  const user = await getCurrentUser();
+  const canPost = !!user && MANAGER_ROLES.includes(user.role);
 
   const briefs = await db.dailyBrief.findMany({
     orderBy: { date: "desc" },

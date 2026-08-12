@@ -45,7 +45,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
               )}
             </nav>
           </div>
-          {user && (
+          {user ? (
             <div className="flex items-center gap-3">
               <span className="text-sm text-neutral-400 hidden sm:inline">
                 {user.name} <span className="text-neutral-600">·</span> {user.role.toLowerCase()}
@@ -59,6 +59,13 @@ export default async function AppShell({ children }: { children: React.ReactNode
                 </button>
               </form>
             </div>
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm px-3 py-1.5 rounded-md bg-orange-600 hover:bg-orange-500 text-white font-semibold transition-colors shrink-0"
+            >
+              Sign in
+            </Link>
           )}
         </div>
         <nav className="sm:hidden flex overflow-x-auto gap-1 px-4 pb-3">
