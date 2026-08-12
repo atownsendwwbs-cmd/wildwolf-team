@@ -50,7 +50,7 @@ export default async function BriefListPage() {
                   </span>
                 </div>
                 <p className="text-sm text-neutral-400 mt-1 line-clamp-2 whitespace-pre-wrap">
-                  {brief.contentEn}
+                  {brief.introEn}
                 </p>
                 <p className="text-xs text-neutral-500 mt-2">by {brief.author.name}</p>
               </Link>

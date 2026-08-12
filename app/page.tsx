@@ -46,9 +46,15 @@ export default async function DashboardPage() {
               )}
               <BilingualBrief
                 titleEn={latestBrief.titleEn}
-                contentEn={latestBrief.contentEn}
                 titleEs={latestBrief.titleEs}
-                contentEs={latestBrief.contentEs}
+                introEn={latestBrief.introEn}
+                introEs={latestBrief.introEs}
+                productionEn={latestBrief.productionEn}
+                productionEs={latestBrief.productionEs}
+                packingEn={latestBrief.packingEn}
+                packingEs={latestBrief.packingEs}
+                specialEn={latestBrief.specialEn}
+                specialEs={latestBrief.specialEs}
                 sourceLang={latestBrief.sourceLang}
                 translated={latestBrief.translated}
                 size="hero"

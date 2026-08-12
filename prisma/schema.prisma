@@ -38,18 +38,28 @@ enum Lang {
 }
 
 model DailyBrief {
-  id         String   @id @default(cuid())
-  date       DateTime @default(now())
-  sourceLang Lang     @default(EN)
-  titleEn    String
-  contentEn  String
-  titleEs    String
-  contentEs  String
-  translated Boolean  @default(true)
-  authorId   String
-  author     User     @relation(fields: [authorId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(cuid())
+  date         DateTime @default(now())
+  sourceLang   Lang     @default(EN)
+  titleEn      String
+  titleEs      String
+  // Quick overview of the day
+  introEn      String
+  introEs      String
+  // JSON-encoded per-sales-channel breakdown: { tiktok, amazon, faire, whatnot, other }
+  productionEn String
+  productionEs String
+  // Order packing announcements: what's low, what to watch, new products
+  packingEn    String
+  packingEs    String
+  // Special projects, important announcements and reminders
+  specialEn    String
+  specialEs    String
+  translated   Boolean  @default(true)
+  authorId     String
+  author       User     @relation(fields: [authorId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([date])
 }

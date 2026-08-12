@@ -26,9 +26,15 @@ export default async function BriefDetailPage({
         </p>
         <BilingualBrief
           titleEn={brief.titleEn}
-          contentEn={brief.contentEn}
           titleEs={brief.titleEs}
-          contentEs={brief.contentEs}
+          introEn={brief.introEn}
+          introEs={brief.introEs}
+          productionEn={brief.productionEn}
+          productionEs={brief.productionEs}
+          packingEn={brief.packingEn}
+          packingEs={brief.packingEs}
+          specialEn={brief.specialEn}
+          specialEs={brief.specialEs}
           sourceLang={brief.sourceLang}
           translated={brief.translated}
           size="hero"
