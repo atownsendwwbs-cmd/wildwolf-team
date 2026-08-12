@@ -4,6 +4,7 @@ export const COMMON_SUPPLIES = [
   "Thermal labels",
   "Gloves",
   "Poly bags",
+  "Clear bags",
   "Shipping labels",
   "Buckets",
   "Bucket lids",

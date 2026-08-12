@@ -5,7 +5,12 @@ A lightweight internal app for the production floor: a daily brief for the team,
 ## Features
 
 - **Daily Brief** — the focal point of the dashboard, broken into four sections: an **Overview** of the day, **Production** broken down per sales channel (TikTok, Amazon, Faire/Retail, WhatNot, Other), **Order Packing** announcements (what's low, what to watch, new products), and **Special Projects & Announcements**. Written in English or Spanish — the app auto-translates every section to the other language on post (best-effort, via a free translation API; if translation fails, the original text is shown instead so nothing blocks). Readers flip between EN/ES with a toggle. Everyone can read the history.
-- **Low Inventory & Supply Alerts** — Anyone can flag low finished goods, raw materials, or warehouse supplies (boxes, tape, thermal labels, gloves, bags, shipping labels, buckets, bucket lids, water, soap, paper towels, toilet paper, etc. — plus a free-text field for anything else). Alerts carry an urgency level and get marked "restocked" by a manager/admin.
+- **Low Inventory & Supply Alerts** — reporting is tailored per category:
+  - **Finished goods** — pick a stock tier (under 100 / 50 / 25 units, or out of stock) instead of a vague urgency level.
+  - **Raw materials** — no urgency dropdown; just **Out of material** (highest priority) vs. **Low — more to pack**, plus the exact amount left (bags, boxes, pallets, or weight — free text) and notes, since precision matters most here.
+  - **Warehouse supplies** — boxes get an exact size picker (the 10 standard box sizes); buckets, bucket lids, poly bags, and clear bags get a free-text size field; everything else (tape, gloves, labels, water, soap, paper towels, toilet paper, etc.) just needs an urgency level.
+  
+  All alerts get marked "restocked" by a manager/admin, and everyone can browse open/resolved alerts.
 - **End of Day Report** — Employees log what was packed, what got sorted out/rejected (and why), where they left off for the next shift, and any notes for the day.
 - **Dashboard** — One page showing today's brief, open alerts, and recent end-of-day reports.
 - **Team management (admin only)** — Add people, set roles (Employee / Manager / Admin), assign/reset PINs, rename profiles, deactivate accounts.

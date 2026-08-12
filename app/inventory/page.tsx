@@ -1,10 +1,16 @@
 import Link from "next/link";
 import AppShell from "@/components/app-shell";
-import { CategoryBadge, UrgencyBadge } from "@/components/badges";
+import {
+  CategoryBadge,
+  UrgencyBadge,
+  StockLevelBadge,
+  RawMaterialStatusBadge,
+} from "@/components/badges";
 import { db } from "@/lib/db";
 import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { resolveAlertAction, reopenAlertAction } from "@/lib/actions/inventory";
+import { BOX_SIZE_LABELS } from "@/lib/inventory";
 
 export default async function InventoryPage({
   searchParams,
@@ -18,7 +24,7 @@ export default async function InventoryPage({
 
   const alerts = await db.inventoryAlert.findMany({
     where: { status: filter },
-    orderBy: [{ urgency: "desc" }, { createdAt: "desc" }],
+    orderBy: { createdAt: "desc" },
     include: {
       reportedBy: { select: { name: true } },
       resolvedBy: { select: { name: true } },
@@ -66,55 +72,74 @@ export default async function InventoryPage({
         </p>
       ) : (
         <ul className="space-y-3">
-          {alerts.map((alert) => (
-            <li
-              key={alert.id}
-              className="rounded-lg border border-neutral-800 bg-neutral-900 p-4"
-            >
-              <div className="flex items-start justify-between gap-3 flex-wrap">
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                    <h2 className="font-semibold text-white">{alert.itemName}</h2>
-                    <CategoryBadge category={alert.category} />
-                    <UrgencyBadge urgency={alert.urgency} />
-                  </div>
-                  {alert.notes && (
-                    <p className="text-sm text-neutral-400 whitespace-pre-wrap">{alert.notes}</p>
-                  )}
-                  <p className="text-xs text-neutral-500 mt-2">
-                    Reported by {alert.reportedBy.name} · {formatDateTime(alert.createdAt)}
-                    {alert.status === "RESOLVED" && alert.resolvedBy && (
-                      <>
-                        {" "}
-                        · Resolved by {alert.resolvedBy.name}
-                        {alert.resolvedAt ? ` · ${formatDateTime(alert.resolvedAt)}` : ""}
-                      </>
+          {alerts.map((alert) => {
+            const size = alert.boxSize ? BOX_SIZE_LABELS[alert.boxSize] : alert.supplySize;
+            return (
+              <li
+                key={alert.id}
+                className="rounded-lg border border-neutral-800 bg-neutral-900 p-4"
+              >
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                      <h2 className="font-semibold text-white">{alert.itemName}</h2>
+                      <CategoryBadge category={alert.category} />
+                      {alert.category === "FINISHED_GOOD" && alert.stockLevel && (
+                        <StockLevelBadge stockLevel={alert.stockLevel} />
+                      )}
+                      {alert.category === "RAW_MATERIAL" && alert.rawMaterialStatus && (
+                        <RawMaterialStatusBadge status={alert.rawMaterialStatus} />
+                      )}
+                      {alert.category === "SUPPLY" && alert.urgency && (
+                        <UrgencyBadge urgency={alert.urgency} />
+                      )}
+                    </div>
+                    {alert.category === "RAW_MATERIAL" && alert.quantity && (
+                      <p className="text-sm text-neutral-300 font-medium">
+                        Amount left: {alert.quantity}
+                      </p>
                     )}
-                  </p>
-                </div>
-                {canResolve && (
-                  <form
-                    action={
-                      alert.status === "OPEN"
-                        ? resolveAlertAction.bind(null, alert.id)
-                        : reopenAlertAction.bind(null, alert.id)
-                    }
-                  >
-                    <button
-                      type="submit"
-                      className={`text-sm px-3 py-1.5 rounded-md border shrink-0 transition-colors ${
+                    {size && (
+                      <p className="text-sm text-neutral-300 font-medium">Size: {size}</p>
+                    )}
+                    {alert.notes && (
+                      <p className="text-sm text-neutral-400 whitespace-pre-wrap mt-1">{alert.notes}</p>
+                    )}
+                    <p className="text-xs text-neutral-500 mt-2">
+                      Reported by {alert.reportedBy.name} · {formatDateTime(alert.createdAt)}
+                      {alert.status === "RESOLVED" && alert.resolvedBy && (
+                        <>
+                          {" "}
+                          · Resolved by {alert.resolvedBy.name}
+                          {alert.resolvedAt ? ` · ${formatDateTime(alert.resolvedAt)}` : ""}
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  {canResolve && (
+                    <form
+                      action={
                         alert.status === "OPEN"
-                          ? "border-green-800 text-green-400 hover:bg-green-950/40"
-                          : "border-neutral-700 text-neutral-300 hover:bg-neutral-800"
-                      }`}
+                          ? resolveAlertAction.bind(null, alert.id)
+                          : reopenAlertAction.bind(null, alert.id)
+                      }
                     >
-                      {alert.status === "OPEN" ? "Mark restocked" : "Reopen"}
-                    </button>
-                  </form>
-                )}
-              </div>
-            </li>
-          ))}
+                      <button
+                        type="submit"
+                        className={`text-sm px-3 py-1.5 rounded-md border shrink-0 transition-colors ${
+                          alert.status === "OPEN"
+                            ? "border-green-800 text-green-400 hover:bg-green-950/40"
+                            : "border-neutral-700 text-neutral-300 hover:bg-neutral-800"
+                        }`}
+                      >
+                        {alert.status === "OPEN" ? "Mark restocked" : "Reopen"}
+                      </button>
+                    </form>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
     </AppShell>

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import AppShell from "@/components/app-shell";
 import BilingualBrief from "@/components/bilingual-brief";
-import { CategoryBadge, UrgencyBadge } from "@/components/badges";
+import { CategoryBadge, UrgencyBadge, StockLevelBadge, RawMaterialStatusBadge } from "@/components/badges";
 import { db } from "@/lib/db";
 import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { formatDateTime, isSameDay } from "@/lib/format";
+import { isCriticalAlert } from "@/lib/inventory";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -17,7 +18,7 @@ export default async function DashboardPage() {
     }),
     db.inventoryAlert.findMany({
       where: { status: "OPEN" },
-      orderBy: [{ urgency: "desc" }, { createdAt: "desc" }],
+      orderBy: { createdAt: "desc" },
       take: 5,
       include: { reportedBy: { select: { name: true } } },
     }),
@@ -29,7 +30,7 @@ export default async function DashboardPage() {
   ]);
 
   const briefIsToday = latestBrief && isSameDay(latestBrief.date, new Date());
-  const highUrgencyCount = openAlerts.filter((a) => a.urgency === "HIGH").length;
+  const criticalCount = openAlerts.filter(isCriticalAlert).length;
 
   return (
     <AppShell>
@@ -100,9 +101,9 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold text-white uppercase tracking-wide">
                 Inventory &amp; Supply Alerts
-                {highUrgencyCount > 0 && (
+                {criticalCount > 0 && (
                   <span className="ml-2 text-xs font-semibold text-red-400 normal-case tracking-normal">
-                    {highUrgencyCount} high urgency
+                    {criticalCount} critical
                   </span>
                 )}
               </h2>
@@ -123,7 +124,15 @@ export default async function DashboardPage() {
                       <span className="text-sm text-white truncate">{alert.itemName}</span>
                       <CategoryBadge category={alert.category} />
                     </div>
-                    <UrgencyBadge urgency={alert.urgency} />
+                    {alert.category === "FINISHED_GOOD" && alert.stockLevel && (
+                      <StockLevelBadge stockLevel={alert.stockLevel} />
+                    )}
+                    {alert.category === "RAW_MATERIAL" && alert.rawMaterialStatus && (
+                      <RawMaterialStatusBadge status={alert.rawMaterialStatus} />
+                    )}
+                    {alert.category === "SUPPLY" && alert.urgency && (
+                      <UrgencyBadge urgency={alert.urgency} />
+                    )}
                   </li>
                 ))}
               </ul>
