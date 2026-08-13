@@ -2,24 +2,34 @@ import AppShell from "@/components/app-shell";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import AddUserForm from "./add-user-form";
-import { RoleSelect, ActiveToggle, NameEditor, ResetPinControl } from "./user-row-controls";
+import DepartmentManager from "./department-manager";
+import { RoleSelect, ActiveToggle, NameEditor, ResetPinControl, DepartmentSelect } from "./user-row-controls";
 
 export default async function AdminUsersPage() {
   const currentUser = await requireRole(["ADMIN"]);
 
-  const users = await db.user.findMany({ orderBy: { createdAt: "asc" } });
+  const [users, departments] = await Promise.all([
+    db.user.findMany({ orderBy: { createdAt: "asc" } }),
+    db.department.findMany({ orderBy: { name: "asc" } }),
+  ]);
 
   return (
     <AppShell>
       <h1 className="text-xl font-bold text-black mb-6">Team</h1>
       <p className="text-sm text-neutral-400 mb-6">
-        Anyone can browse the app without signing in. People listed here with a PIN can sign in to
-        post briefs, report inventory, submit end-of-day reports, or manage the team — so you know
-        who did what. Deactivate someone to remove their sign-in access.
+        Anyone can browse the app without signing in. People with a PIN can sign in to post
+        briefs, report inventory, submit end-of-day reports, or manage the team. People added
+        without a PIN can still tap their name to sign in and turn on notifications — for
+        @mentions and task pings — without unlocking any of that. Deactivate someone to remove
+        their sign-in access entirely.
       </p>
 
       <div className="mb-6">
         <AddUserForm />
+      </div>
+
+      <div className="mb-6">
+        <DepartmentManager departments={departments} />
       </div>
 
       <div className="rounded-lg border border-neutral-800 overflow-hidden">
@@ -28,6 +38,7 @@ export default async function AdminUsersPage() {
             <tr>
               <th className="text-left px-4 py-2.5 font-medium">Name</th>
               <th className="text-left px-4 py-2.5 font-medium">Role</th>
+              <th className="text-left px-4 py-2.5 font-medium">Department</th>
               <th className="text-left px-4 py-2.5 font-medium">Status</th>
               <th className="text-left px-4 py-2.5 font-medium">PIN</th>
             </tr>
@@ -43,6 +54,9 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="px-4 py-3">
                   <RoleSelect userId={u.id} role={u.role} />
+                </td>
+                <td className="px-4 py-3">
+                  <DepartmentSelect userId={u.id} departmentId={u.departmentId} departments={departments} />
                 </td>
                 <td className="px-4 py-3">
                   <ActiveToggle userId={u.id} active={u.active} />

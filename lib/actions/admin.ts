@@ -85,3 +85,44 @@ export async function setUserRoleAction(userId: string, role: "ADMIN" | "MANAGER
   await db.user.update({ where: { id: userId }, data: { role } });
   revalidatePath("/admin/users");
 }
+
+export async function setUserDepartmentAction(userId: string, departmentId: string | null) {
+  await requireRole(["ADMIN"]);
+  await db.user.update({ where: { id: userId }, data: { departmentId } });
+  revalidatePath("/admin/users");
+  revalidatePath("/tasks");
+  revalidatePath("/");
+}
+
+const departmentNameSchema = z.string().trim().min(1, "Name is required").max(60);
+
+export async function createDepartmentAction(
+  _prevState: AdminFormState,
+  formData: FormData
+): Promise<AdminFormState> {
+  await requireRole(["ADMIN"]);
+
+  const parsed = departmentNameSchema.safeParse(formData.get("name"));
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid name." };
+  }
+
+  const existing = await db.department.findUnique({ where: { name: parsed.data } });
+  if (existing) {
+    return { error: "That department already exists." };
+  }
+
+  await db.department.create({ data: { name: parsed.data } });
+
+  revalidatePath("/admin/users");
+  revalidatePath("/tasks/new");
+  return { success: `Added ${parsed.data}.` };
+}
+
+export async function deleteDepartmentAction(departmentId: string) {
+  await requireRole(["ADMIN"]);
+  await db.department.delete({ where: { id: departmentId } });
+  revalidatePath("/admin/users");
+  revalidatePath("/tasks/new");
+  revalidatePath("/tasks");
+}

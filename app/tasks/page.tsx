@@ -1,7 +1,9 @@
 import Link from "next/link";
 import AppShell from "@/components/app-shell";
+import ReactionBar from "@/components/reaction-bar";
 import { db } from "@/lib/db";
 import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
+import { getReactionSummaries } from "@/lib/reactions";
 import { formatDateTime } from "@/lib/format";
 import { completeTaskAction, reopenTaskAction } from "@/lib/actions/tasks";
 
@@ -20,9 +22,16 @@ export default async function TasksPage({
     orderBy: { createdAt: "desc" },
     include: {
       assignedTo: { select: { id: true, name: true } },
+      department: { select: { id: true, name: true } },
       assignedBy: { select: { name: true } },
     },
   });
+
+  const reactionsByTask = await getReactionSummaries(
+    "TASK",
+    tasks.map((t) => t.id),
+    user?.id ?? null
+  );
 
   return (
     <AppShell>
@@ -69,7 +78,11 @@ export default async function TasksPage({
         <ul className="space-y-3">
           {tasks.map((task) => {
             const canComplete =
-              !!user && (task.assignedToId === user.id || task.assignedToId === null || canManage);
+              !!user &&
+              (task.assignedToId === user.id ||
+                (task.assignedToId === null && task.departmentId === null) ||
+                (task.departmentId !== null && task.departmentId === user.departmentId) ||
+                canManage);
             return (
               <li
                 key={task.id}
@@ -80,7 +93,7 @@ export default async function TasksPage({
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <h2 className="font-semibold text-black">{task.title}</h2>
                       <span className="inline-flex items-center rounded-md border border-neutral-700 bg-neutral-800 px-2.5 py-0.5 text-xs text-neutral-300">
-                        {task.assignedTo ? task.assignedTo.name : "Everyone"}
+                        {task.assignedTo ? task.assignedTo.name : task.department ? task.department.name : "Everyone"}
                       </span>
                     </div>
                     {task.details && (
@@ -92,6 +105,12 @@ export default async function TasksPage({
                         <> · Completed {formatDateTime(task.completedAt)}</>
                       )}
                     </p>
+                    <ReactionBar
+                      messageType="TASK"
+                      messageId={task.id}
+                      reactions={reactionsByTask[task.id] ?? []}
+                      canReact={!!user}
+                    />
                   </div>
                   {task.status === "OPEN" && canComplete && (
                     <form action={completeTaskAction.bind(null, task.id)}>

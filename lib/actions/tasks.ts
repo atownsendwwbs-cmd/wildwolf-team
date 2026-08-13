@@ -5,12 +5,13 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUser, requireRole, MANAGER_ROLES } from "@/lib/auth";
-import { sendPushToUsers, notifyUser } from "@/lib/push";
+import { sendLocalizedPushToUsers, notifyUser } from "@/lib/push";
 
 const taskSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
   details: z.string().trim().max(2000).optional(),
   assignedToId: z.string().trim().optional(),
+  departmentId: z.string().trim().optional(),
 });
 
 export type TaskFormState = { error?: string };
@@ -25,13 +26,14 @@ export async function createTaskAction(
     title: formData.get("title"),
     details: formData.get("details") || undefined,
     assignedToId: formData.get("assignedToId") || undefined,
+    departmentId: formData.get("departmentId") || undefined,
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
-  const { title, details, assignedToId } = parsed.data;
+  const { title, details, assignedToId, departmentId } = parsed.data;
 
   let assignee = null;
   if (assignedToId) {
@@ -41,19 +43,47 @@ export async function createTaskAction(
     }
   }
 
+  let department = null;
+  if (departmentId) {
+    department = await db.department.findUnique({ where: { id: departmentId } });
+    if (!department) {
+      return { error: "Selected department not found." };
+    }
+  }
+
   await db.task.create({
     data: {
       title,
       details,
       assignedToId: assignee?.id,
+      departmentId: department?.id,
       assignedById: user.id,
     },
   });
 
-  sendPushToUsers(assignee ? [assignee.id] : "all", {
-    title: assignee ? "New task for you" : "New task for everyone",
-    body: title,
-    url: "/tasks",
+  let recipientIds: string[] | "all" = "all";
+  if (assignee) {
+    recipientIds = [assignee.id];
+  } else if (department) {
+    const members = await db.user.findMany({
+      where: { departmentId: department.id, active: true, id: { not: user.id } },
+      select: { id: true },
+    });
+    recipientIds = members.map((m) => m.id);
+  }
+
+  const target = assignee ? assignee.name : department ? department.name : null;
+  sendLocalizedPushToUsers(recipientIds, {
+    EN: {
+      title: target ? `New task for ${target}` : "New task for everyone",
+      body: title,
+      url: "/tasks",
+    },
+    ES: {
+      title: target ? `Nueva tarea para ${target}` : "Nueva tarea para todos",
+      body: title,
+      url: "/tasks",
+    },
   }).catch(() => {});
 
   revalidatePath("/tasks");
@@ -68,7 +98,10 @@ export async function completeTaskAction(taskId: string) {
   if (!task) return;
 
   const canComplete =
-    task.assignedToId === user.id || task.assignedToId === null || MANAGER_ROLES.includes(user.role);
+    task.assignedToId === user.id ||
+    (task.assignedToId === null && task.departmentId === null) ||
+    (task.departmentId !== null && task.departmentId === user.departmentId) ||
+    MANAGER_ROLES.includes(user.role);
   if (!canComplete) return;
 
   await db.task.update({

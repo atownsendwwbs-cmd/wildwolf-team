@@ -19,22 +19,40 @@ enum Role {
 }
 
 model User {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String
   pinHash       String?
-  role          Role     @default(EMPLOYEE)
-  preferredLang Lang     @default(EN)
-  active        Boolean  @default(true)
-  createdAt     DateTime @default(now())
+  role          Role        @default(EMPLOYEE)
+  preferredLang Lang        @default(EN)
+  active        Boolean     @default(true)
+  departmentId  String?
+  department    Department? @relation(fields: [departmentId], references: [id])
+  createdAt     DateTime    @default(now())
 
-  briefs        DailyBrief[]
-  alertsFiled   InventoryAlert[] @relation("AlertFiledBy")
-  alertsResolved InventoryAlert[] @relation("AlertResolvedBy")
-  eodReports    EndOfDayReport[]
+  briefs            DailyBrief[]
+  alertsFiled       InventoryAlert[]   @relation("AlertFiledBy")
+  alertsResolved    InventoryAlert[]   @relation("AlertResolvedBy")
+  eodReports        EndOfDayReport[]
   pushSubscriptions PushSubscription[]
-  tasksAssigned  Task[] @relation("TaskAssignedTo")
-  tasksCreated   Task[] @relation("TaskAssignedBy")
-  announcements  Announcement[]
+  tasksAssigned     Task[]             @relation("TaskAssignedTo")
+  tasksCreated      Task[]             @relation("TaskAssignedBy")
+  announcements     Announcement[]
+  reactions         Reaction[]
+
+  @@index([departmentId])
+}
+
+// Non-person-specific task categories (e.g. Production, Labels, Bag
+// Labeling) — a task can be assigned to a whole department instead of
+// (or as well as having) a specific person, and a team member can belong
+// to one so department-wide tasks show up as "mine" for them.
+model Department {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  tasks Task[]
+  users User[]
 }
 
 model PushSubscription {
@@ -55,31 +73,39 @@ enum TaskStatus {
 }
 
 model Task {
-  id           String     @id @default(cuid())
+  id           String      @id @default(cuid())
   title        String
   details      String?
-  // null = assigned to everyone
+  // assignedToId, departmentId both null = assigned to everyone.
+  // At most one of assignedToId / departmentId should be set.
   assignedToId String?
-  assignedTo   User?      @relation("TaskAssignedTo", fields: [assignedToId], references: [id])
+  assignedTo   User?       @relation("TaskAssignedTo", fields: [assignedToId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
   assignedById String
-  assignedBy   User       @relation("TaskAssignedBy", fields: [assignedById], references: [id])
-  status       TaskStatus @default(OPEN)
+  assignedBy   User        @relation("TaskAssignedBy", fields: [assignedById], references: [id])
+  status       TaskStatus  @default(OPEN)
   completedAt  DateTime?
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime    @default(now())
 
   @@index([status])
   @@index([assignedToId])
+  @@index([departmentId])
 }
 
 model Announcement {
-  id         String   @id @default(cuid())
-  sourceLang Lang     @default(EN)
-  messageEn  String
-  messageEs  String
-  translated Boolean  @default(true)
-  authorId   String
-  author     User     @relation(fields: [authorId], references: [id])
-  createdAt  DateTime @default(now())
+  id               String    @id @default(cuid())
+  sourceLang       Lang      @default(EN)
+  messageEn        String
+  messageEs        String
+  translated       Boolean   @default(true)
+  // JSON-encoded array of userIds @mentioned in the message, so they can
+  // get a distinct "you were mentioned" push on top of the usual one.
+  mentionedUserIds String    @default("[]")
+  authorId         String
+  author           User      @relation(fields: [authorId], references: [id])
+  createdAt        DateTime  @default(now())
+  editedAt         DateTime?
 
   @@index([createdAt])
 }
@@ -90,9 +116,9 @@ enum Lang {
 }
 
 model DailyBrief {
-  id           String   @id @default(cuid())
-  date         DateTime @default(now())
-  sourceLang   Lang     @default(EN)
+  id           String    @id @default(cuid())
+  date         DateTime  @default(now())
+  sourceLang   Lang      @default(EN)
   titleEn      String
   titleEs      String
   // Quick overview of the day
@@ -107,11 +133,12 @@ model DailyBrief {
   // Special projects, important announcements and reminders
   specialEn    String
   specialEs    String
-  translated   Boolean  @default(true)
+  translated   Boolean   @default(true)
   authorId     String
-  author       User     @relation(fields: [authorId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  author       User      @relation(fields: [authorId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  editedAt     DateTime?
 
   @@index([date])
 }
@@ -189,15 +216,37 @@ model InventoryAlert {
 }
 
 model EndOfDayReport {
-  id           String   @id @default(cuid())
-  date         DateTime @default(now())
-  authorId     String
-  author       User     @relation(fields: [authorId], references: [id])
-  packedItems  String
+  id             String   @id @default(cuid())
+  date           DateTime @default(now())
+  authorId       String
+  author         User     @relation(fields: [authorId], references: [id])
+  packedItems    String
   sortedOutItems String
-  notes        String?
-  leftOff      String?
-  createdAt    DateTime @default(now())
+  notes          String?
+  leftOff        String?
+  createdAt      DateTime @default(now())
 
   @@index([date])
+}
+
+enum ReactionTarget {
+  ANNOUNCEMENT
+  BRIEF
+  TASK
+}
+
+// Polymorphic emoji reactions — messageId points at an Announcement,
+// DailyBrief, or Task id depending on messageType (no FK, since it can
+// point at any of the three tables).
+model Reaction {
+  id          String         @id @default(cuid())
+  messageType ReactionTarget
+  messageId   String
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  emoji       String
+  createdAt   DateTime       @default(now())
+
+  @@unique([messageType, messageId, userId, emoji])
+  @@index([messageType, messageId])
 }

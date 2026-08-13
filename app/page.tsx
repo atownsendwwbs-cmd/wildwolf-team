@@ -1,9 +1,12 @@
 import Link from "next/link";
 import AppShell from "@/components/app-shell";
 import BilingualBrief from "@/components/bilingual-brief";
+import AnnouncementItem from "@/components/announcement-item";
+import ReactionBar from "@/components/reaction-bar";
 import { CategoryBadge, UrgencyBadge, StockLevelBadge, RawMaterialStatusBadge } from "@/components/badges";
 import { db } from "@/lib/db";
 import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
+import { getReactionSummaries } from "@/lib/reactions";
 import { formatDateTime, isSameDay } from "@/lib/format";
 import { isCriticalAlert } from "@/lib/inventory";
 import { completeTaskAction } from "@/lib/actions/tasks";
@@ -12,7 +15,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   const canPostBrief = !!user && MANAGER_ROLES.includes(user.role);
 
-  const [latestBrief, openAlerts, recentReports, myTasks] = await Promise.all([
+  const [latestBrief, openAlerts, recentReports, myTasks, recentAnnouncements] = await Promise.all([
     db.dailyBrief.findFirst({
       orderBy: { date: "desc" },
       include: { author: { select: { name: true } } },
@@ -30,12 +33,38 @@ export default async function DashboardPage() {
     }),
     user
       ? db.task.findMany({
-          where: { status: "OPEN", OR: [{ assignedToId: user.id }, { assignedToId: null }] },
+          where: {
+            status: "OPEN",
+            OR: [
+              { assignedToId: user.id },
+              { assignedToId: null, departmentId: null },
+              ...(user.departmentId ? [{ departmentId: user.departmentId }] : []),
+            ],
+          },
           orderBy: { createdAt: "desc" },
           take: 5,
-          include: { assignedTo: { select: { name: true } } },
+          include: { assignedTo: { select: { name: true } }, department: { select: { name: true } } },
         })
       : Promise.resolve([]),
+    db.announcement.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 3,
+      include: { author: { select: { name: true } } },
+    }),
+  ]);
+
+  const [briefReactions, taskReactions, announcementReactions] = await Promise.all([
+    getReactionSummaries("BRIEF", latestBrief ? [latestBrief.id] : [], user?.id ?? null),
+    getReactionSummaries(
+      "TASK",
+      myTasks.map((t) => t.id),
+      user?.id ?? null
+    ),
+    getReactionSummaries(
+      "ANNOUNCEMENT",
+      recentAnnouncements.map((a) => a.id),
+      user?.id ?? null
+    ),
   ]);
 
   const briefIsToday = latestBrief && isSameDay(latestBrief.date, new Date());
@@ -70,8 +99,17 @@ export default async function DashboardPage() {
                 defaultLang={user?.preferredLang}
                 size="hero"
               />
+              <ReactionBar
+                messageType="BRIEF"
+                messageId={latestBrief.id}
+                reactions={briefReactions[latestBrief.id] ?? []}
+                canReact={!!user}
+              />
               <div className="flex items-center justify-between mt-5 pt-4 border-t border-neutral-800">
-                <p className="text-xs text-neutral-500">by {latestBrief.author.name}</p>
+                <p className="text-xs text-neutral-500">
+                  by {latestBrief.author.name}
+                  {latestBrief.editedAt && <> · edited</>}
+                </p>
                 <div className="flex items-center gap-4">
                   <Link href="/brief" className="text-sm text-neutral-400 hover:text-black font-medium">
                     Past briefs
@@ -105,6 +143,40 @@ export default async function DashboardPage() {
           </section>
         )}
 
+        {/* Announcements */}
+        <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-black uppercase tracking-wide">Announcements</h2>
+            <Link href="/announcements" className="text-xs text-orange-400 hover:text-orange-300 font-medium shrink-0">
+              View all
+            </Link>
+          </div>
+          {recentAnnouncements.length === 0 ? (
+            <p className="text-neutral-500 text-sm">Nothing posted yet.</p>
+          ) : (
+            <ul className="space-y-3">
+              {recentAnnouncements.map((a) => (
+                <li key={a.id} className="rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2.5">
+                  <AnnouncementItem
+                    id={a.id}
+                    messageEn={a.messageEn}
+                    messageEs={a.messageEs}
+                    sourceLang={a.sourceLang}
+                    translated={a.translated}
+                    editedAt={a.editedAt}
+                    authorName={a.author.name}
+                    createdAtLabel={formatDateTime(a.createdAt)}
+                    defaultLang={user?.preferredLang}
+                    canEdit={!!user && (user.id === a.authorId || MANAGER_ROLES.includes(user.role))}
+                    canReact={!!user}
+                    reactions={announcementReactions[a.id] ?? []}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
         {/* My Tasks */}
         {user && myTasks.length > 0 && (
           <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
@@ -118,22 +190,33 @@ export default async function DashboardPage() {
               {myTasks.map((task) => (
                 <li
                   key={task.id}
-                  className="flex items-center justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
+                  className="rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
                 >
-                  <div className="min-w-0">
-                    <span className="text-sm text-black">{task.title}</span>
-                    {!task.assignedTo && (
-                      <span className="ml-2 text-xs text-neutral-500">(everyone)</span>
-                    )}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <span className="text-sm text-black">{task.title}</span>
+                      {!task.assignedTo && task.department && (
+                        <span className="ml-2 text-xs text-neutral-500">({task.department.name})</span>
+                      )}
+                      {!task.assignedTo && !task.department && (
+                        <span className="ml-2 text-xs text-neutral-500">(everyone)</span>
+                      )}
+                    </div>
+                    <form action={completeTaskAction.bind(null, task.id)} className="shrink-0">
+                      <button
+                        type="submit"
+                        className="text-xs px-2.5 py-1 rounded-md border border-green-800 text-green-400 hover:bg-green-950/40 transition-colors"
+                      >
+                        Mark done
+                      </button>
+                    </form>
                   </div>
-                  <form action={completeTaskAction.bind(null, task.id)} className="shrink-0">
-                    <button
-                      type="submit"
-                      className="text-xs px-2.5 py-1 rounded-md border border-green-800 text-green-400 hover:bg-green-950/40 transition-colors"
-                    >
-                      Mark done
-                    </button>
-                  </form>
+                  <ReactionBar
+                    messageType="TASK"
+                    messageId={task.id}
+                    reactions={taskReactions[task.id] ?? []}
+                    canReact={!!user}
+                  />
                 </li>
               ))}
             </ul>

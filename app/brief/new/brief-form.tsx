@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { createBriefAction, type BriefFormState } from "@/lib/actions/brief";
-import { SALES_CHANNELS } from "@/lib/brief";
+import { SALES_CHANNELS, type ProductionByChannel } from "@/lib/brief";
 
 const initialState: BriefFormState = {};
 
@@ -25,6 +25,8 @@ const COPY = {
     specialPlaceholder: "Special projects for today...\nImportant reminders...",
     submit: "Post brief",
     submitting: "Posting…",
+    submitEdit: "Save changes",
+    submittingEdit: "Saving…",
   },
   ES: {
     langLabel: "Escribiendo este aviso en",
@@ -44,16 +46,34 @@ const COPY = {
     specialPlaceholder: "Proyectos especiales de hoy...\nRecordatorios importantes...",
     submit: "Publicar aviso",
     submitting: "Publicando…",
+    submitEdit: "Guardar cambios",
+    submittingEdit: "Guardando…",
   },
 } as const;
 
 const fieldClass =
   "w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 leading-relaxed";
 
-export default function BriefForm() {
-  const [state, formAction, pending] = useActionState(createBriefAction, initialState);
-  const [sourceLang, setSourceLang] = useState<"EN" | "ES">("EN");
+export type BriefInitial = {
+  title: string;
+  sourceLang: "EN" | "ES";
+  intro: string;
+  production: ProductionByChannel;
+  packing: string;
+  special: string;
+};
+
+export default function BriefForm({
+  action,
+  initial,
+}: {
+  action?: (prevState: BriefFormState, formData: FormData) => Promise<BriefFormState>;
+  initial?: BriefInitial;
+}) {
+  const [state, formAction, pending] = useActionState(action ?? createBriefAction, initialState);
+  const [sourceLang, setSourceLang] = useState<"EN" | "ES">(initial?.sourceLang ?? "EN");
   const c = COPY[sourceLang];
+  const isEdit = !!initial;
 
   return (
     <form action={formAction} className="space-y-8 max-w-2xl">
@@ -81,13 +101,26 @@ export default function BriefForm() {
 
       <div>
         <label className="block text-sm font-medium text-neutral-300 mb-2">{c.title}</label>
-        <input type="text" name="title" required placeholder={c.titlePlaceholder} className={fieldClass} />
+        <input
+          type="text"
+          name="title"
+          required
+          defaultValue={initial?.title}
+          placeholder={c.titlePlaceholder}
+          className={fieldClass}
+        />
       </div>
 
       <div className="border-t border-neutral-800 pt-6">
         <h3 className="text-sm font-semibold text-black">{c.intro}</h3>
         <p className="text-xs text-neutral-500 mb-2">{c.introHint}</p>
-        <textarea name="intro" rows={3} placeholder={c.introPlaceholder} className={fieldClass} />
+        <textarea
+          name="intro"
+          rows={3}
+          defaultValue={initial?.intro}
+          placeholder={c.introPlaceholder}
+          className={fieldClass}
+        />
       </div>
 
       <div className="border-t border-neutral-800 pt-6">
@@ -102,6 +135,7 @@ export default function BriefForm() {
               <textarea
                 name={`production${channel.key[0].toUpperCase()}${channel.key.slice(1)}`}
                 rows={2}
+                defaultValue={initial?.production[channel.key]}
                 className={fieldClass}
               />
             </div>
@@ -112,13 +146,25 @@ export default function BriefForm() {
       <div className="border-t border-neutral-800 pt-6">
         <h3 className="text-sm font-semibold text-black">{c.packing}</h3>
         <p className="text-xs text-neutral-500 mb-2">{c.packingHint}</p>
-        <textarea name="packing" rows={4} placeholder={c.packingPlaceholder} className={fieldClass} />
+        <textarea
+          name="packing"
+          rows={4}
+          defaultValue={initial?.packing}
+          placeholder={c.packingPlaceholder}
+          className={fieldClass}
+        />
       </div>
 
       <div className="border-t border-neutral-800 pt-6">
         <h3 className="text-sm font-semibold text-black">{c.special}</h3>
         <p className="text-xs text-neutral-500 mb-2">{c.specialHint}</p>
-        <textarea name="special" rows={4} placeholder={c.specialPlaceholder} className={fieldClass} />
+        <textarea
+          name="special"
+          rows={4}
+          defaultValue={initial?.special}
+          placeholder={c.specialPlaceholder}
+          className={fieldClass}
+        />
       </div>
 
       {state.error && (
@@ -132,7 +178,7 @@ export default function BriefForm() {
         disabled={pending}
         className="rounded-lg bg-orange-600 hover:bg-orange-500 disabled:opacity-60 text-white font-semibold px-5 py-2.5 transition-colors"
       >
-        {pending ? c.submitting : c.submit}
+        {isEdit ? (pending ? c.submittingEdit : c.submitEdit) : pending ? c.submitting : c.submit}
       </button>
     </form>
   );

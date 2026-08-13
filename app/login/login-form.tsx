@@ -1,15 +1,18 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { loginAction, type LoginState } from "@/lib/actions/auth";
 
-type UserOption = { id: string; name: string; role: string };
+type UserOption = { id: string; name: string; role: string; hasPin: boolean };
 
 const initialState: LoginState = {};
 
 export default function LoginForm({ users }: { users: UserOption[] }) {
   const [state, formAction, pending] = useActionState(loginAction, initialState);
   const [selected, setSelected] = useState("");
+
+  const selectedUser = useMemo(() => users.find((u) => u.id === selected), [users, selected]);
+  const needsPin = !selectedUser || selectedUser.hasPin;
 
   return (
     <form action={formAction} className="bg-neutral-900 rounded-lg p-6 space-y-5 border border-neutral-800">
@@ -28,26 +31,33 @@ export default function LoginForm({ users }: { users: UserOption[] }) {
           {users.map((u) => (
             <option key={u.id} value={u.id}>
               {u.name}
+              {!u.hasPin ? " (no PIN needed)" : ""}
             </option>
           ))}
         </select>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-neutral-300 mb-2">PIN</label>
-        <input
-          type="password"
-          name="pin"
-          inputMode="numeric"
-          autoComplete="off"
-          maxLength={4}
-          minLength={4}
-          pattern="[0-9]{4}"
-          required
-          placeholder="4-digit PIN"
-          className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-black px-3 py-3 text-base tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
+      {needsPin ? (
+        <div>
+          <label className="block text-sm font-medium text-neutral-300 mb-2">PIN</label>
+          <input
+            type="password"
+            name="pin"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={4}
+            minLength={4}
+            pattern="[0-9]{4}"
+            required
+            placeholder="4-digit PIN"
+            className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-black px-3 py-3 text-base tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+      ) : (
+        <p className="text-sm text-neutral-500">
+          This profile doesn&apos;t use a PIN — just tap sign in to turn on notifications for {selectedUser?.name}.
+        </p>
+      )}
 
       {state.error && (
         <p className="text-sm text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">

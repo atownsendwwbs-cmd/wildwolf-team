@@ -6,16 +6,19 @@ import TaskForm from "./task-form";
 export default async function NewTaskPage() {
   await requireRole(MANAGER_ROLES);
 
-  const people = await db.user.findMany({
-    where: { active: true },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true },
-  });
+  const [people, departments] = await Promise.all([
+    db.user.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
+    db.department.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+  ]);
 
   return (
     <AppShell>
       <h1 className="text-xl font-bold text-black mb-6">Assign a task</h1>
-      <TaskForm people={people} />
+      <TaskForm people={people} departments={departments} />
     </AppShell>
   );
 }

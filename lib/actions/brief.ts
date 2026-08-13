@@ -29,13 +29,8 @@ async function translateSection(text: string, from: "EN" | "ES", to: "EN" | "ES"
   return translateText(text, from, to);
 }
 
-export async function createBriefAction(
-  _prevState: BriefFormState,
-  formData: FormData
-): Promise<BriefFormState> {
-  const user = await requireRole(MANAGER_ROLES);
-
-  const parsed = briefSchema.safeParse({
+function parseBriefForm(formData: FormData) {
+  return briefSchema.safeParse({
     title: formData.get("title"),
     sourceLang: formData.get("sourceLang"),
     intro: formData.get("intro"),
@@ -47,28 +42,20 @@ export async function createBriefAction(
     packing: formData.get("packing"),
     special: formData.get("special"),
   });
+}
 
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
-  }
-
-  const { title, sourceLang, intro, packing, special } = parsed.data;
+async function buildBriefFields(parsed: z.infer<typeof briefSchema>) {
+  const { title, sourceLang, intro, packing, special } = parsed;
   const production: ProductionByChannel = {
-    tiktok: parsed.data.productionTiktok,
-    amazon: parsed.data.productionAmazon,
-    faire: parsed.data.productionFaire,
-    whatnot: parsed.data.productionWhatnot,
-    other: parsed.data.productionOther,
+    tiktok: parsed.productionTiktok,
+    amazon: parsed.productionAmazon,
+    faire: parsed.productionFaire,
+    whatnot: parsed.productionWhatnot,
+    other: parsed.productionOther,
   };
   const targetLang = sourceLang === "EN" ? "ES" : "EN";
 
-  const [
-    tTitle,
-    tIntro,
-    tPacking,
-    tSpecial,
-    ...tChannels
-  ] = await Promise.all([
+  const [tTitle, tIntro, tPacking, tSpecial, ...tChannels] = await Promise.all([
     translateSection(title, sourceLang, targetLang),
     translateSection(intro, sourceLang, targetLang),
     translateSection(packing, sourceLang, targetLang),
@@ -91,36 +78,71 @@ export async function createBriefAction(
     tTitle !== null && tIntro !== null && tPacking !== null && tSpecial !== null && productionTranslated;
 
   const en = sourceLang === "EN";
-  const titleEn = en ? title : (tTitle ?? title);
-  const titleEs = en ? (tTitle ?? title) : title;
-  const introEn = en ? intro : (tIntro ?? intro);
-  const introEs = en ? (tIntro ?? intro) : intro;
-  const packingEn = en ? packing : (tPacking ?? packing);
-  const packingEs = en ? (tPacking ?? packing) : packing;
-  const specialEn = en ? special : (tSpecial ?? special);
-  const specialEs = en ? (tSpecial ?? special) : special;
-  const productionEn = en ? production : translatedProduction;
-  const productionEs = en ? translatedProduction : production;
+  return {
+    sourceLang,
+    titleEn: en ? title : (tTitle ?? title),
+    titleEs: en ? (tTitle ?? title) : title,
+    introEn: en ? intro : (tIntro ?? intro),
+    introEs: en ? (tIntro ?? intro) : intro,
+    packingEn: en ? packing : (tPacking ?? packing),
+    packingEs: en ? (tPacking ?? packing) : packing,
+    specialEn: en ? special : (tSpecial ?? special),
+    specialEs: en ? (tSpecial ?? special) : special,
+    productionEn: JSON.stringify(en ? production : translatedProduction),
+    productionEs: JSON.stringify(en ? translatedProduction : production),
+    translated,
+  };
+}
+
+export async function createBriefAction(
+  _prevState: BriefFormState,
+  formData: FormData
+): Promise<BriefFormState> {
+  const user = await requireRole(MANAGER_ROLES);
+
+  const parsed = parseBriefForm(formData);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const fields = await buildBriefFields(parsed.data);
 
   await db.dailyBrief.create({
-    data: {
-      sourceLang,
-      titleEn,
-      titleEs,
-      introEn,
-      introEs,
-      productionEn: JSON.stringify(productionEn),
-      productionEs: JSON.stringify(productionEs),
-      packingEn,
-      packingEs,
-      specialEn,
-      specialEs,
-      translated,
-      authorId: user.id,
-    },
+    data: { ...fields, authorId: user.id },
   });
 
   revalidatePath("/brief");
   revalidatePath("/");
   redirect("/brief");
+}
+
+export async function editBriefAction(
+  briefId: string,
+  _prevState: BriefFormState,
+  formData: FormData
+): Promise<BriefFormState> {
+  const user = await requireRole(MANAGER_ROLES);
+
+  const existing = await db.dailyBrief.findUnique({ where: { id: briefId } });
+  if (!existing) return { error: "Brief not found." };
+  if (existing.authorId !== user.id && !MANAGER_ROLES.includes(user.role)) {
+    return { error: "You can't edit this brief." };
+  }
+
+  const parsed = parseBriefForm(formData);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const fields = await buildBriefFields(parsed.data);
+
+  await db.dailyBrief.update({
+    where: { id: briefId },
+    data: { ...fields, editedAt: new Date() },
+  });
+
+  revalidatePath("/brief");
+  revalidatePath(`/brief/${briefId}`);
+  revalidatePath("/");
+  redirect(`/brief/${briefId}`);
 }

@@ -9,11 +9,17 @@ export default async function LoginPage() {
   const session = await getSession();
   if (session) redirect("/");
 
-  const users = await db.user.findMany({
-    where: { active: true, pinHash: { not: null } },
+  const rawUsers = await db.user.findMany({
+    where: { active: true },
     orderBy: { name: "asc" },
-    select: { id: true, name: true, role: true },
+    select: { id: true, name: true, role: true, pinHash: true },
   });
+  const users = rawUsers.map((u) => ({
+    id: u.id,
+    name: u.name,
+    role: u.role,
+    hasPin: !!u.pinHash,
+  }));
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-950 px-4">
@@ -23,7 +29,9 @@ export default async function LoginPage() {
           <h1 className="text-2xl font-bold text-black tracking-tight">
             Wild <span className="text-orange-600">Wolf</span> Warehouse
           </h1>
-          <p className="text-neutral-400 mt-1">Sign in to post or manage — no PIN? Just browse instead.</p>
+          <p className="text-neutral-400 mt-1">
+            Sign in to post, manage, or get notifications — no profile? Just browse instead.
+          </p>
         </div>
         {users.length === 0 ? (
           <p className="text-sm text-neutral-500 text-center">

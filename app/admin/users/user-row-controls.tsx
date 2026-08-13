@@ -5,10 +5,46 @@ import {
   renameUserAction,
   resetPinAction,
   setUserActiveAction,
+  setUserDepartmentAction,
   setUserRoleAction,
 } from "@/lib/actions/admin";
 
 type Role = "ADMIN" | "MANAGER" | "EMPLOYEE";
+
+export function DepartmentSelect({
+  userId,
+  departmentId,
+  departments,
+}: {
+  userId: string;
+  departmentId: string | null;
+  departments: { id: string; name: string }[];
+}) {
+  const [value, setValue] = useState(departmentId ?? "");
+  const [pending, startTransition] = useTransition();
+
+  return (
+    <select
+      value={value}
+      disabled={pending}
+      onChange={(e) => {
+        const next = e.target.value || null;
+        setValue(next ?? "");
+        startTransition(() => {
+          setUserDepartmentAction(userId, next);
+        });
+      }}
+      className="rounded-md bg-neutral-900 border border-neutral-700 text-black text-sm px-2 py-1.5 disabled:opacity-60"
+    >
+      <option value="">No department</option>
+      {departments.map((d) => (
+        <option key={d.id} value={d.id}>
+          {d.name}
+        </option>
+      ))}
+    </select>
+  );
+}
 
 export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
   const [value, setValue] = useState(role);
