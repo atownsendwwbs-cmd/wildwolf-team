@@ -6,7 +6,13 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUser, requireRole, MANAGER_ROLES } from "@/lib/auth";
 import { BOX_SIZES, BOXES_ITEM_NAME, SIZED_SUPPLY_ITEMS } from "@/lib/inventory";
+import { notifyManagers } from "@/lib/push";
 import type { BoxSize } from "@/lib/generated/prisma/enums";
+
+const CATEGORY_LABEL = {
+  EN: { FINISHED_GOOD: "finished good", RAW_MATERIAL: "raw material", SUPPLY: "supply" },
+  ES: { FINISHED_GOOD: "producto terminado", RAW_MATERIAL: "materia prima", SUPPLY: "insumo" },
+} as const;
 
 const boxSizeValues = BOX_SIZES.map((s) => s.value) as [string, ...string[]];
 
@@ -95,6 +101,19 @@ export async function createAlertAction(
       quantity: category === "RAW_MATERIAL" ? parsed.data.quantity : undefined,
     },
   });
+
+  notifyManagers(user.id, {
+    EN: {
+      title: `Low ${CATEGORY_LABEL.EN[category]} reported`,
+      body: `${itemName} — reported by ${user.name}`,
+      url: "/inventory",
+    },
+    ES: {
+      title: `${CATEGORY_LABEL.ES[category]} bajo reportado`,
+      body: `${itemName} — reportado por ${user.name}`,
+      url: "/inventory",
+    },
+  }).catch(() => {});
 
   revalidatePath("/inventory");
   revalidatePath("/");

@@ -67,6 +67,7 @@ export default async function DashboardPage() {
                 specialEs={latestBrief.specialEs}
                 sourceLang={latestBrief.sourceLang}
                 translated={latestBrief.translated}
+                defaultLang={user?.preferredLang}
                 size="hero"
               />
               <div className="flex items-center justify-between mt-5 pt-4 border-t border-neutral-800">

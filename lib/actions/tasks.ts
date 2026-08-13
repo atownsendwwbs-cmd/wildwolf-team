@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUser, requireRole, MANAGER_ROLES } from "@/lib/auth";
-import { sendPushToUsers } from "@/lib/push";
+import { sendPushToUsers, notifyUser } from "@/lib/push";
 
 const taskSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
@@ -75,6 +75,19 @@ export async function completeTaskAction(taskId: string) {
     where: { id: taskId },
     data: { status: "DONE", completedAt: new Date() },
   });
+
+  notifyUser(task.assignedById, user.id, {
+    EN: {
+      title: "Task completed",
+      body: `${user.name} marked "${task.title}" done`,
+      url: "/tasks",
+    },
+    ES: {
+      title: "Tarea completada",
+      body: `${user.name} marcó "${task.title}" como hecha`,
+      url: "/tasks",
+    },
+  }).catch(() => {});
 
   revalidatePath("/tasks");
   revalidatePath("/");

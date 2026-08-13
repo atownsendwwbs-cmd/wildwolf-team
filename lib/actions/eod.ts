@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
+import { notifyManagers } from "@/lib/push";
 
 const lineItemSchema = z.object({
   label: z.string().trim().min(1).max(200),
@@ -65,6 +66,19 @@ export async function createEodReportAction(
       leftOff: parsed.data.leftOff,
     },
   });
+
+  notifyManagers(user.id, {
+    EN: {
+      title: "End-of-day report submitted",
+      body: `${user.name} just submitted their end-of-day report`,
+      url: "/eod",
+    },
+    ES: {
+      title: "Reporte de fin de día enviado",
+      body: `${user.name} acaba de enviar su reporte de fin de día`,
+      url: "/eod",
+    },
+  }).catch(() => {});
 
   revalidatePath("/eod");
   revalidatePath("/");

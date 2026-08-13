@@ -58,7 +58,7 @@ export default async function DisplayPage() {
               <ul className="space-y-4">
                 {announcements.map((a) => (
                   <li key={a.id} className="rounded-xl border border-neutral-800 bg-neutral-900 p-5">
-                    <p className="text-2xl leading-snug">{a.message}</p>
+                    <p className="text-2xl leading-snug">{a.messageEn}</p>
                     <p className="text-base text-neutral-500 mt-2">
                       {a.author.name} · {formatDateTime(a.createdAt)}
                     </p>

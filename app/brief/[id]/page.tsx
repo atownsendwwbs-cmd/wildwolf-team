@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import AppShell from "@/components/app-shell";
 import BilingualBrief from "@/components/bilingual-brief";
 import { db } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 
 export default async function BriefDetailPage({
@@ -11,10 +12,13 @@ export default async function BriefDetailPage({
 }) {
   const { id } = await params;
 
-  const brief = await db.dailyBrief.findUnique({
-    where: { id },
-    include: { author: { select: { name: true } } },
-  });
+  const [brief, user] = await Promise.all([
+    db.dailyBrief.findUnique({
+      where: { id },
+      include: { author: { select: { name: true } } },
+    }),
+    getCurrentUser(),
+  ]);
 
   if (!brief) notFound();
 
@@ -37,6 +41,7 @@ export default async function BriefDetailPage({
           specialEs={brief.specialEs}
           sourceLang={brief.sourceLang}
           translated={brief.translated}
+          defaultLang={user?.preferredLang}
           size="hero"
         />
       </article>

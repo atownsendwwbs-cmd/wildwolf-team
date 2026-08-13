@@ -18,6 +18,9 @@ type Props = {
   sourceLang: Lang;
   translated: boolean;
   size?: "hero" | "normal";
+  // Language to show first — defaults to the brief's own source language,
+  // but pass the signed-in viewer's preference to show it their way instead.
+  defaultLang?: Lang;
 };
 
 const LABELS = {
@@ -64,8 +67,9 @@ export default function BilingualBrief({
   sourceLang,
   translated,
   size = "normal",
+  defaultLang,
 }: Props) {
-  const [lang, setLang] = useState<Lang>(sourceLang);
+  const [lang, setLang] = useState<Lang>(defaultLang ?? sourceLang);
 
   const title = lang === "EN" ? titleEn : titleEs;
   const intro = lang === "EN" ? introEn : introEs;

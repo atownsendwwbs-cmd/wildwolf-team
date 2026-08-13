@@ -7,6 +7,7 @@ import { formatDateTime } from "@/lib/format";
 export default async function BriefListPage() {
   const user = await getCurrentUser();
   const canPost = !!user && MANAGER_ROLES.includes(user.role);
+  const lang = user?.preferredLang ?? "EN";
 
   const briefs = await db.dailyBrief.findMany({
     orderBy: { date: "desc" },
@@ -40,7 +41,9 @@ export default async function BriefListPage() {
               >
                 <div className="flex items-baseline justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-semibold text-white">{brief.titleEn}</h2>
+                    <h2 className="font-semibold text-white">
+                      {lang === "EN" ? brief.titleEn : brief.titleEs}
+                    </h2>
                     <span className="text-[10px] font-semibold text-neutral-500 border border-neutral-700 rounded px-1.5 py-0.5">
                       EN/ES
                     </span>
@@ -50,7 +53,7 @@ export default async function BriefListPage() {
                   </span>
                 </div>
                 <p className="text-sm text-neutral-400 mt-1 line-clamp-2 whitespace-pre-wrap">
-                  {brief.introEn}
+                  {lang === "EN" ? brief.introEn : brief.introEs}
                 </p>
                 <p className="text-xs text-neutral-500 mt-2">by {brief.author.name}</p>
               </Link>

@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions/auth";
 import InstallPrompt from "@/components/install-prompt";
 import NotificationOptIn from "@/components/notification-opt-in";
+import LanguagePreference from "@/components/language-preference";
 
 const NAV_LINKS = [
   { href: "/", label: "Dashboard" },
@@ -50,6 +51,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
           </div>
           {user ? (
             <div className="flex items-center gap-3">
+              <LanguagePreference initial={user.preferredLang} />
               <NotificationOptIn />
               <span className="text-sm text-neutral-400 hidden sm:inline">
                 {user.name} <span className="text-neutral-600">·</span> {user.role.toLowerCase()}

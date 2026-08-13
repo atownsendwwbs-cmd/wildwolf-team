@@ -1,4 +1,5 @@
 import AppShell from "@/components/app-shell";
+import BilingualAnnouncement from "@/components/bilingual-announcement";
 import { db } from "@/lib/db";
 import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
@@ -30,7 +31,13 @@ export default async function AnnouncementsPage() {
         <ul className="space-y-3">
           {announcements.map((a) => (
             <li key={a.id} className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-              <p className="text-white whitespace-pre-wrap">{a.message}</p>
+              <BilingualAnnouncement
+                messageEn={a.messageEn}
+                messageEs={a.messageEs}
+                sourceLang={a.sourceLang}
+                translated={a.translated}
+                defaultLang={user?.preferredLang}
+              />
               <p className="text-xs text-neutral-500 mt-2">
                 {a.author.name} · {formatDateTime(a.createdAt)}
               </p>
