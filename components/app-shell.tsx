@@ -2,12 +2,15 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions/auth";
 import InstallPrompt from "@/components/install-prompt";
+import NotificationOptIn from "@/components/notification-opt-in";
 
 const NAV_LINKS = [
   { href: "/", label: "Dashboard" },
   { href: "/brief", label: "Daily Brief" },
   { href: "/inventory", label: "Inventory Alerts" },
   { href: "/eod", label: "End of Day" },
+  { href: "/tasks", label: "Tasks" },
+  { href: "/announcements", label: "Announcements" },
 ];
 
 export default async function AppShell({ children }: { children: React.ReactNode }) {
@@ -47,6 +50,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
           </div>
           {user ? (
             <div className="flex items-center gap-3">
+              <NotificationOptIn />
               <span className="text-sm text-neutral-400 hidden sm:inline">
                 {user.name} <span className="text-neutral-600">·</span> {user.role.toLowerCase()}
               </span>

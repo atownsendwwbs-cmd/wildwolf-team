@@ -6,12 +6,13 @@ import { db } from "@/lib/db";
 import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { formatDateTime, isSameDay } from "@/lib/format";
 import { isCriticalAlert } from "@/lib/inventory";
+import { completeTaskAction } from "@/lib/actions/tasks";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const canPostBrief = !!user && MANAGER_ROLES.includes(user.role);
 
-  const [latestBrief, openAlerts, recentReports] = await Promise.all([
+  const [latestBrief, openAlerts, recentReports, myTasks] = await Promise.all([
     db.dailyBrief.findFirst({
       orderBy: { date: "desc" },
       include: { author: { select: { name: true } } },
@@ -27,6 +28,14 @@ export default async function DashboardPage() {
       take: 4,
       include: { author: { select: { name: true } } },
     }),
+    user
+      ? db.task.findMany({
+          where: { status: "OPEN", OR: [{ assignedToId: user.id }, { assignedToId: null }] },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          include: { assignedTo: { select: { name: true } } },
+        })
+      : Promise.resolve([]),
   ]);
 
   const briefIsToday = latestBrief && isSameDay(latestBrief.date, new Date());
@@ -92,6 +101,41 @@ export default async function DashboardPage() {
                 Post today&apos;s brief
               </Link>
             )}
+          </section>
+        )}
+
+        {/* My Tasks */}
+        {user && myTasks.length > 0 && (
+          <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-white uppercase tracking-wide">My Tasks</h2>
+              <Link href="/tasks" className="text-xs text-orange-400 hover:text-orange-300 font-medium shrink-0">
+                View all
+              </Link>
+            </div>
+            <ul className="space-y-2">
+              {myTasks.map((task) => (
+                <li
+                  key={task.id}
+                  className="flex items-center justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <span className="text-sm text-white">{task.title}</span>
+                    {!task.assignedTo && (
+                      <span className="ml-2 text-xs text-neutral-500">(everyone)</span>
+                    )}
+                  </div>
+                  <form action={completeTaskAction.bind(null, task.id)} className="shrink-0">
+                    <button
+                      type="submit"
+                      className="text-xs px-2.5 py-1 rounded-md border border-green-800 text-green-400 hover:bg-green-950/40 transition-colors"
+                    >
+                      Mark done
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
@@ -184,6 +228,15 @@ export default async function DashboardPage() {
             <p className="font-semibold text-white text-sm">Submit end-of-day report</p>
             <p className="text-xs text-neutral-500 mt-1">Packed, sorted out, notes, hand-off</p>
           </Link>
+          {canPostBrief && (
+            <Link
+              href="/tasks/new"
+              className="rounded-lg border border-neutral-800 bg-neutral-900 hover:border-orange-700 hover:bg-neutral-900/80 transition-colors p-4 text-center"
+            >
+              <p className="font-semibold text-white text-sm">Assign a task</p>
+              <p className="text-xs text-neutral-500 mt-1">Send it to someone&apos;s phone</p>
+            </Link>
+          )}
         </div>
       </div>
     </AppShell>

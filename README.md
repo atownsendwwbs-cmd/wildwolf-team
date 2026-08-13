@@ -13,6 +13,9 @@ A lightweight internal app for the production floor: a daily brief for the team,
   All alerts get marked "restocked" by a manager/admin, and everyone can browse open/resolved alerts.
 - **End of Day Report** — Employees log what was packed, what got sorted out/rejected (and why), where they left off for the next shift, and any notes for the day.
 - **Dashboard** — One page showing today's brief, open alerts, and recent end-of-day reports.
+- **Tasks** — managers/admins assign a task to one person (or everyone), which sends a real push notification to their phone. Employees see their open tasks on the dashboard and mark them done; managers/admins can also complete or reopen any task from **Tasks**.
+- **Announcements** — a quick "post" box for managers/admins to broadcast something to everyone right now (a truck arriving, a shift change, anything time-sensitive). Pushes to every signed-up phone instantly and shows on the warehouse TV display.
+- **Warehouse display (`/display`)** — a public, no-login, auto-refreshing screen meant to run on a monitor around the warehouse: recent announcements, the latest brief, and critical inventory in one glance. Refreshes itself every 30 seconds.
 - **Team management (admin only)** — Add people, set roles (Employee / Manager / Admin), assign/reset PINs, rename profiles, deactivate accounts.
 - **Installable on phones** — the app is a Progressive Web App: anyone can add it to their home screen (Android shows a native "Install" prompt; iOS shows instructions for Share → Add to Home Screen) and it opens full-screen like a native app, with its own icon.
 
@@ -61,8 +64,9 @@ The database is Postgres (Vercel's serverless functions don't have a persistent 
 1. **Create the database.** In the Vercel dashboard, open (or create) this project → **Storage** tab → **Create Database** → **Postgres** (Neon-backed). This automatically adds connection env vars to the project.
 2. **Point `DATABASE_URL` at it.** The Postgres integration typically adds vars named `POSTGRES_URL` / `POSTGRES_PRISMA_URL` / `DATABASE_URL` (naming has changed across Vercel's Postgres offerings) — in **Settings → Environment Variables**, make sure a var named exactly `DATABASE_URL` exists and holds the **pooled** connection string (the one meant for serverless — usually the one already named `DATABASE_URL` or `POSTGRES_PRISMA_URL`). If it's only under a different name, add `DATABASE_URL` yourself with that same value.
 3. **Add `SESSION_SECRET`.** Settings → Environment Variables → add `SESSION_SECRET` with a long random string (e.g. run `openssl rand -base64 32` locally and paste the output). This signs the login session cookie — use a different value than your local `.env`.
-4. **Import the repo.** New Project → import this GitHub repo → deploy. Vercel auto-detects Next.js; no build command overrides needed.
-5. **Set up sign-in.** You don't need to run anything for this — the first visit to the deployed app auto-signs you in as an admin (since no PIN exists yet anywhere) so you can go to **Team** and set your real name + PIN, then add the rest of the team. (You can still run `DATABASE_URL="<the same pooled connection string>" npm run db:seed` from your machine instead if you'd rather seed the accounts listed above in one shot.)
+4. **Add push notification keys (optional but recommended).** Run `node -e "console.log(require('web-push').generateVAPIDKeys())"` locally and add the three vars from the [Push notifications](#push-notifications) section below. Skip this and the app still works — task/announcement pushes just won't send.
+5. **Import the repo.** New Project → import this GitHub repo → deploy. Vercel auto-detects Next.js; no build command overrides needed.
+6. **Set up sign-in.** You don't need to run anything for this — the first visit to the deployed app auto-signs you in as an admin (since no PIN exists yet anywhere) so you can go to **Team** and set your real name + PIN, then add the rest of the team. (You can still run `DATABASE_URL="<the same pooled connection string>" npm run db:seed` from your machine instead if you'd rather seed the accounts listed above in one shot.)
 
 Every future `git push` to this branch redeploys automatically and re-applies any new Prisma migrations.
 
@@ -79,6 +83,24 @@ The app is a Progressive Web App (PWA) — no App Store/Play Store listing neede
 
 Once installed, it opens full-screen with its own icon — no address bar, no need to remember a URL. The manifest and icons are defined in `app/manifest.ts` and `public/icons/` (regenerate them with `node scripts/generate-icons.mjs` if you want a different icon design).
 
+## Push notifications
+
+Tasks assigned to you and announcements arrive as real push notifications — the kind that show up even when the app isn't open — via the standard Web Push API (no third-party notification service, no cost).
+
+**Setup (one-time):** three env vars, generated with `node -e "console.log(require('web-push').generateVAPIDKeys())"`:
+- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`
+- `VAPID_PRIVATE_KEY`
+- `VAPID_SUBJECT` — a `mailto:` address or URL identifying who's sending (required by the push spec)
+
+Add these in Vercel the same way as `DATABASE_URL`/`SESSION_SECRET` (Settings → Environment Variables) — they're already set for local dev in this repo's `.env`. If they're missing, the app still works fine; it just silently skips sending pushes.
+
+**Turning it on, per person:** while signed in, click **Enable notifications** in the nav — that's a real browser permission prompt, so it has to be a deliberate click, not something the app can do automatically. Each device that clicks it gets its own subscription, so someone using both a phone and a desktop can enable it on both.
+
+**Platform notes:**
+- **Android (Chrome):** works in a regular browser tab, no install required.
+- **iPhone (Safari):** push notifications only work once the app is added to the home screen (Share → Add to Home Screen) — this is an iOS restriction, not something this app can work around. Opening it in a normal Safari tab won't offer notifications at all; the "Enable notifications" area will say so instead of showing the button.
+- If someone denies the permission prompt, they won't see it again until they clear that decision in their browser's site settings — the app shows a note explaining this instead of nagging them.
+
 ## Tech stack
 
-Next.js (App Router) + TypeScript + Tailwind CSS, Prisma ORM (Postgres), server actions for all writes, signed JWT session cookie for auth. Theme colors ("Timber & Amber" — warm charcoal + vivid amber accent) live in `app/globals.css` as Tailwind v4 theme tokens, overriding the `neutral`/`orange`/`sky` scales so they apply everywhere automatically. Daily Brief translation runs through MyMemory's free translation API (`lib/translate.ts`) — no API key required, but it's a best-effort public service with modest rate limits, worth swapping for a paid provider (DeepL, Google Cloud Translation) if translation volume grows.
+Next.js (App Router) + TypeScript + Tailwind CSS, Prisma ORM (Postgres), server actions for all writes, signed JWT session cookie for auth. Theme colors ("Timber & Amber" — warm charcoal + vivid amber accent) live in `app/globals.css` as Tailwind v4 theme tokens, overriding the `neutral`/`orange`/`sky` scales so they apply everywhere automatically. Daily Brief translation runs through MyMemory's free translation API (`lib/translate.ts`) — no API key required, but it's a best-effort public service with modest rate limits, worth swapping for a paid provider (DeepL, Google Cloud Translation) if translation volume grows. Push notifications use the standard Web Push API via the `web-push` package (`lib/push.ts`) and a service worker (`public/sw.js`) — no third-party push service.
