@@ -73,109 +73,115 @@ export default async function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Daily Brief — the focal point of the dashboard */}
-        {latestBrief ? (
-          <section className="relative overflow-hidden rounded-lg border border-neutral-700 bg-gradient-to-br from-neutral-900 to-neutral-900/60">
-            <div className="absolute inset-y-0 left-0 w-1 bg-orange-500" />
-            <div className="p-6 sm:p-8">
-              {!briefIsToday && (
-                <p className="text-xs text-amber-400 mb-3 font-medium">
-                  Most recent brief — {formatDateTime(latestBrief.date)} (nothing posted today yet)
-                </p>
-              )}
-              <BilingualBrief
-                titleEn={latestBrief.titleEn}
-                titleEs={latestBrief.titleEs}
-                introEn={latestBrief.introEn}
-                introEs={latestBrief.introEs}
-                productionEn={latestBrief.productionEn}
-                productionEs={latestBrief.productionEs}
-                packingEn={latestBrief.packingEn}
-                packingEs={latestBrief.packingEs}
-                specialEn={latestBrief.specialEn}
-                specialEs={latestBrief.specialEs}
-                sourceLang={latestBrief.sourceLang}
-                translated={latestBrief.translated}
-                defaultLang={user?.preferredLang}
-                size="hero"
-              />
-              <ReactionBar
-                messageType="BRIEF"
-                messageId={latestBrief.id}
-                reactions={briefReactions[latestBrief.id] ?? []}
-                canReact={!!user}
-              />
-              <div className="flex items-center justify-between mt-5 pt-4 border-t border-neutral-800">
-                <p className="text-xs text-neutral-500">
-                  by {latestBrief.author.name}
-                  {latestBrief.editedAt && <> · edited</>}
-                </p>
-                <div className="flex items-center gap-4">
-                  <Link href="/brief" className="text-sm text-neutral-400 hover:text-black font-medium">
-                    Past briefs
-                  </Link>
-                  {canPostBrief && (
-                    <Link
-                      href="/brief/new"
-                      className="text-sm text-orange-400 hover:text-orange-300 font-semibold"
-                    >
-                      {briefIsToday ? "Post an update →" : "+ Post today's brief"}
-                    </Link>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Daily Brief — the focal point of the dashboard */}
+          <div className="lg:col-span-2">
+            {latestBrief ? (
+              <section className="relative overflow-hidden rounded-lg border border-neutral-700 bg-gradient-to-br from-neutral-900 to-neutral-900/60 h-full">
+                <div className="absolute inset-y-0 left-0 w-1 bg-orange-500" />
+                <div className="p-6 sm:p-8">
+                  {!briefIsToday && (
+                    <p className="text-xs text-amber-400 mb-3 font-medium">
+                      Most recent brief — {formatDateTime(latestBrief.date)} (nothing posted today yet)
+                    </p>
                   )}
-                </div>
-              </div>
-            </div>
-          </section>
-        ) : (
-          <section className="rounded-lg border border-dashed border-neutral-700 bg-neutral-900/40 p-8 text-center">
-            <span className="text-xs font-semibold uppercase tracking-wide text-orange-400">
-              Daily Brief
-            </span>
-            <p className="text-neutral-300 mt-2">No brief posted yet.</p>
-            {canPostBrief && (
-              <Link
-                href="/brief/new"
-                className="inline-block mt-4 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 transition-colors"
-              >
-                Post today&apos;s brief
-              </Link>
-            )}
-          </section>
-        )}
-
-        {/* Announcements */}
-        <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-black uppercase tracking-wide">Announcements</h2>
-            <Link href="/announcements" className="text-xs text-orange-400 hover:text-orange-300 font-medium shrink-0">
-              View all
-            </Link>
-          </div>
-          {recentAnnouncements.length === 0 ? (
-            <p className="text-neutral-500 text-sm">Nothing posted yet.</p>
-          ) : (
-            <ul className="space-y-3">
-              {recentAnnouncements.map((a) => (
-                <li key={a.id} className="rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2.5">
-                  <AnnouncementItem
-                    id={a.id}
-                    messageEn={a.messageEn}
-                    messageEs={a.messageEs}
-                    sourceLang={a.sourceLang}
-                    translated={a.translated}
-                    editedAt={a.editedAt}
-                    authorName={a.author.name}
-                    createdAtLabel={formatDateTime(a.createdAt)}
+                  <BilingualBrief
+                    titleEn={latestBrief.titleEn}
+                    titleEs={latestBrief.titleEs}
+                    introEn={latestBrief.introEn}
+                    introEs={latestBrief.introEs}
+                    productionEn={latestBrief.productionEn}
+                    productionEs={latestBrief.productionEs}
+                    packingEn={latestBrief.packingEn}
+                    packingEs={latestBrief.packingEs}
+                    specialEn={latestBrief.specialEn}
+                    specialEs={latestBrief.specialEs}
+                    sourceLang={latestBrief.sourceLang}
+                    translated={latestBrief.translated}
                     defaultLang={user?.preferredLang}
-                    canEdit={!!user && (user.id === a.authorId || MANAGER_ROLES.includes(user.role))}
-                    canReact={!!user}
-                    reactions={announcementReactions[a.id] ?? []}
+                    size="hero"
                   />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                  <ReactionBar
+                    messageType="BRIEF"
+                    messageId={latestBrief.id}
+                    reactions={briefReactions[latestBrief.id] ?? []}
+                    canReact={!!user}
+                  />
+                  <div className="flex items-center justify-between mt-5 pt-4 border-t border-neutral-800">
+                    <p className="text-xs text-neutral-500">
+                      by {latestBrief.author.name}
+                      {latestBrief.editedAt && <> · edited</>}
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <Link href="/brief" className="text-sm text-neutral-400 hover:text-black font-medium">
+                        Past briefs
+                      </Link>
+                      {canPostBrief && (
+                        <Link
+                          href="/brief/new"
+                          className="text-sm text-orange-400 hover:text-orange-300 font-semibold"
+                        >
+                          {briefIsToday ? "Post an update →" : "+ Post today's brief"}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            ) : (
+              <section className="rounded-lg border border-dashed border-neutral-700 bg-neutral-900/40 p-8 text-center h-full">
+                <span className="text-xs font-semibold uppercase tracking-wide text-orange-400">
+                  Daily Brief
+                </span>
+                <p className="text-neutral-300 mt-2">No brief posted yet.</p>
+                {canPostBrief && (
+                  <Link
+                    href="/brief/new"
+                    className="inline-block mt-4 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 transition-colors"
+                  >
+                    Post today&apos;s brief
+                  </Link>
+                )}
+              </section>
+            )}
+          </div>
+
+          {/* Announcements */}
+          <div className="lg:col-span-1">
+            <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 h-full">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-bold text-black uppercase tracking-wide">Announcements</h2>
+                <Link href="/announcements" className="text-xs text-orange-400 hover:text-orange-300 font-medium shrink-0">
+                  View all
+                </Link>
+              </div>
+              {recentAnnouncements.length === 0 ? (
+                <p className="text-neutral-500 text-sm">Nothing posted yet.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {recentAnnouncements.map((a) => (
+                    <li key={a.id} className="rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2.5">
+                      <AnnouncementItem
+                        id={a.id}
+                        messageEn={a.messageEn}
+                        messageEs={a.messageEs}
+                        sourceLang={a.sourceLang}
+                        translated={a.translated}
+                        editedAt={a.editedAt}
+                        authorName={a.author.name}
+                        createdAtLabel={formatDateTime(a.createdAt)}
+                        defaultLang={user?.preferredLang}
+                        canEdit={!!user && (user.id === a.authorId || MANAGER_ROLES.includes(user.role))}
+                        canReact={!!user}
+                        reactions={announcementReactions[a.id] ?? []}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
+        </div>
 
         {/* My Tasks */}
         {user && myTasks.length > 0 && (

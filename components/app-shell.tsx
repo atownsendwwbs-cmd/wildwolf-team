@@ -75,24 +75,48 @@ function TeamIcon({ className }: IconProps) {
 }
 
 const NAV_LINKS = [
-  { href: "/", label: "Dashboard", Icon: DashboardIcon },
-  { href: "/brief", label: "Daily Brief", Icon: BriefIcon },
-  { href: "/inventory", label: "Inventory Alerts", Icon: InventoryIcon },
-  { href: "/eod", label: "End of Day", Icon: EodIcon },
-  { href: "/tasks", label: "Tasks", Icon: TasksIcon },
-  { href: "/announcements", label: "Announcements", Icon: AnnouncementIcon },
-];
+  { href: "/", Icon: DashboardIcon },
+  { href: "/brief", Icon: BriefIcon },
+  { href: "/inventory", Icon: InventoryIcon },
+  { href: "/eod", Icon: EodIcon },
+  { href: "/tasks", Icon: TasksIcon },
+  { href: "/announcements", Icon: AnnouncementIcon },
+] as const;
 
 const TAB_LINKS = [
-  { href: "/", label: "Home", Icon: DashboardIcon },
-  { href: "/brief", label: "Brief", Icon: BriefIcon },
-  { href: "/inventory", label: "Alerts", Icon: InventoryIcon },
-  { href: "/tasks", label: "Tasks", Icon: TasksIcon },
-  { href: "/announcements", label: "News", Icon: AnnouncementIcon },
-];
+  { href: "/", Icon: DashboardIcon },
+  { href: "/brief", Icon: BriefIcon },
+  { href: "/inventory", Icon: InventoryIcon },
+  { href: "/tasks", Icon: TasksIcon },
+  { href: "/announcements", Icon: AnnouncementIcon },
+] as const;
+
+const NAV_COPY = {
+  "/": { EN: "Dashboard", ES: "Panel" },
+  "/brief": { EN: "Daily Brief", ES: "Aviso Diario" },
+  "/inventory": { EN: "Inventory Alerts", ES: "Alertas de Inventario" },
+  "/eod": { EN: "End of Day", ES: "Fin del Día" },
+  "/tasks": { EN: "Tasks", ES: "Tareas" },
+  "/announcements": { EN: "Announcements", ES: "Anuncios" },
+} as const;
+
+const TAB_COPY = {
+  "/": { EN: "Home", ES: "Inicio" },
+  "/brief": { EN: "Brief", ES: "Aviso" },
+  "/inventory": { EN: "Alerts", ES: "Alertas" },
+  "/tasks": { EN: "Tasks", ES: "Tareas" },
+  "/announcements": { EN: "News", ES: "Noticias" },
+} as const;
+
+const MISC_COPY = {
+  team: { EN: "Team", ES: "Equipo" },
+  signIn: { EN: "Sign in", ES: "Iniciar sesión" },
+  signOut: { EN: "Sign out", ES: "Cerrar sesión" },
+} as const;
 
 export default async function AppShell({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
+  const lang = user?.preferredLang ?? "EN";
 
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
@@ -115,7 +139,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
               className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             >
               <link.Icon className="w-5 h-5 shrink-0" />
-              {link.label}
+              {NAV_COPY[link.href][lang]}
             </Link>
           ))}
           {user?.role === "ADMIN" && (
@@ -124,7 +148,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
               className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             >
               <TeamIcon className="w-5 h-5 shrink-0" />
-              Team
+              {MISC_COPY.team[lang]}
             </Link>
           )}
         </nav>
@@ -144,7 +168,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
                   type="submit"
                   className="w-full text-sm px-3 py-2 rounded-md border border-white/20 text-white/80 hover:bg-white/10 transition-colors"
                 >
-                  Sign out
+                  {MISC_COPY.signOut[lang]}
                 </button>
               </form>
             </>
@@ -153,7 +177,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
               href="/login"
               className="block text-center text-sm px-3 py-2 rounded-md bg-orange-600 hover:bg-orange-500 text-white font-semibold transition-colors"
             >
-              Sign in
+              {MISC_COPY.signIn[lang]}
             </Link>
           )}
         </div>
@@ -169,7 +193,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
           <div className="flex items-center gap-2 shrink-0">
             {user?.role === "ADMIN" && (
               <Link href="/admin/users" className="text-xs font-medium text-white/70 hover:text-white px-2">
-                Team
+                {MISC_COPY.team[lang]}
               </Link>
             )}
             {user && <LanguagePreference initial={user.preferredLang} />}
@@ -179,7 +203,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
                   type="submit"
                   className="text-xs px-2.5 py-1.5 rounded-md border border-white/20 text-white/80"
                 >
-                  Sign out
+                  {MISC_COPY.signOut[lang]}
                 </button>
               </form>
             ) : (
@@ -187,7 +211,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
                 href="/login"
                 className="text-xs px-2.5 py-1.5 rounded-md bg-orange-600 text-white font-semibold"
               >
-                Sign in
+                {MISC_COPY.signIn[lang]}
               </Link>
             )}
           </div>
@@ -211,7 +235,7 @@ export default async function AppShell({ children }: { children: React.ReactNode
             className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-white/70"
           >
             <link.Icon className="w-5 h-5" />
-            <span className="text-[10px] font-medium">{link.label}</span>
+            <span className="text-[10px] font-medium">{TAB_COPY[link.href][lang]}</span>
           </Link>
         ))}
       </nav>
