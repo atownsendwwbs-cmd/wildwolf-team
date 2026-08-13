@@ -216,6 +216,11 @@ export default async function AppShell({ children }: { children: React.ReactNode
             )}
           </div>
         </div>
+        {user && (
+          <div className="px-4 pb-3 -mt-1">
+            <NotificationOptIn />
+          </div>
+        )}
       </header>
 
       <div className="flex-1 flex flex-col min-w-0">

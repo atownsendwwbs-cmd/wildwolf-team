@@ -100,7 +100,7 @@ export default function NotificationOptIn() {
 
   if (support === "ios-needs-install") {
     return (
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-white/50">
         Add this app to your home screen first to get push notifications on iPhone.
       </p>
     );
@@ -108,7 +108,7 @@ export default function NotificationOptIn() {
 
   if (support === "denied") {
     return (
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-white/50">
         Notifications are blocked in your browser settings — enable them there to get task and
         announcement alerts.
       </p>
@@ -123,8 +123,8 @@ export default function NotificationOptIn() {
         onClick={support === "subscribed" ? disable : enable}
         className={`text-xs px-2.5 py-1.5 rounded-md border font-medium transition-colors disabled:opacity-60 ${
           support === "subscribed"
-            ? "border-neutral-700 text-neutral-300 hover:bg-neutral-800"
-            : "border-orange-600 text-orange-400 hover:bg-orange-950/40"
+            ? "border-white/20 text-white/70 hover:bg-white/10"
+            : "border-orange-400 text-orange-200 hover:bg-white/10"
         }`}
       >
         {support === "subscribed"
@@ -133,7 +133,7 @@ export default function NotificationOptIn() {
             ? "Enabling…"
             : "Enable notifications"}
       </button>
-      {error && <span className="text-xs text-red-400">{error}</span>}
+      {error && <span className="text-xs text-red-300">{error}</span>}
     </div>
   );
 }
