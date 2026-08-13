@@ -43,7 +43,7 @@ export default function EodForm() {
           name="leftOff"
           rows={3}
           placeholder="e.g. Mid-way through the 500-unit run for Work Order #123, resume at station 2"
-          className="w-full rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
 
@@ -55,7 +55,7 @@ export default function EodForm() {
           name="notes"
           rows={4}
           placeholder="Anything else worth flagging — equipment issues, staffing, delays..."
-          className="w-full rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
 

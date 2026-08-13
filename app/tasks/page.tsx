@@ -27,7 +27,7 @@ export default async function TasksPage({
   return (
     <AppShell>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h1 className="text-xl font-bold text-white">Tasks</h1>
+        <h1 className="text-xl font-bold text-black">Tasks</h1>
         {canManage && (
           <Link
             href="/tasks/new"
@@ -43,8 +43,8 @@ export default async function TasksPage({
           href="/tasks?status=open"
           className={`text-sm px-3 py-1.5 rounded-md border ${
             filter === "OPEN"
-              ? "bg-neutral-800 border-neutral-600 text-white"
-              : "border-neutral-800 text-neutral-400 hover:text-white"
+              ? "bg-neutral-800 border-neutral-600 text-black"
+              : "border-neutral-800 text-neutral-400 hover:text-black"
           }`}
         >
           Open
@@ -53,8 +53,8 @@ export default async function TasksPage({
           href="/tasks?status=done"
           className={`text-sm px-3 py-1.5 rounded-md border ${
             filter === "DONE"
-              ? "bg-neutral-800 border-neutral-600 text-white"
-              : "border-neutral-800 text-neutral-400 hover:text-white"
+              ? "bg-neutral-800 border-neutral-600 text-black"
+              : "border-neutral-800 text-neutral-400 hover:text-black"
           }`}
         >
           Done
@@ -78,7 +78,7 @@ export default async function TasksPage({
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h2 className="font-semibold text-white">{task.title}</h2>
+                      <h2 className="font-semibold text-black">{task.title}</h2>
                       <span className="inline-flex items-center rounded-md border border-neutral-700 bg-neutral-800 px-2.5 py-0.5 text-xs text-neutral-300">
                         {task.assignedTo ? task.assignedTo.name : "Everyone"}
                       </span>

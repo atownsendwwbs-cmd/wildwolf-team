@@ -20,7 +20,7 @@ export default function LoginForm({ users }: { users: UserOption[] }) {
           value={selected}
           onChange={(e) => setSelected(e.target.value)}
           required
-          className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-black px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-orange-500"
         >
           <option value="" disabled>
             Select your name
@@ -45,7 +45,7 @@ export default function LoginForm({ users }: { users: UserOption[] }) {
           pattern="[0-9]{4}"
           required
           placeholder="4-digit PIN"
-          className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-3 py-3 text-base tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-black px-3 py-3 text-base tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
 

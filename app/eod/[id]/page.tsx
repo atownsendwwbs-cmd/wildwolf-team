@@ -16,7 +16,7 @@ function LineItemTable({ title, items, emptyLabel }: { title: string; items: Lin
             <tbody>
               {items.map((item, i) => (
                 <tr key={i} className={i > 0 ? "border-t border-neutral-800" : ""}>
-                  <td className="px-3 py-2 text-neutral-200 font-medium">{item.label}</td>
+                  <td className="px-3 py-2 text-black font-medium">{item.label}</td>
                   <td className="px-3 py-2 text-neutral-400 w-24">{item.quantity}</td>
                   <td className="px-3 py-2 text-neutral-500">{item.detail}</td>
                 </tr>
@@ -50,7 +50,7 @@ export default async function EodDetailPage({
     <AppShell>
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-6 space-y-6">
         <div>
-          <h1 className="text-xl font-bold text-white">{report.author.name}&apos;s end-of-day report</h1>
+          <h1 className="text-xl font-bold text-black">{report.author.name}&apos;s end-of-day report</h1>
           <p className="text-sm text-neutral-500 mt-1">{formatDateTime(report.date)}</p>
         </div>
 
@@ -64,14 +64,14 @@ export default async function EodDetailPage({
         {report.leftOff && (
           <div>
             <h3 className="text-sm font-semibold text-neutral-300 mb-2">Where they left off</h3>
-            <p className="text-neutral-200 whitespace-pre-wrap">{report.leftOff}</p>
+            <p className="text-black whitespace-pre-wrap">{report.leftOff}</p>
           </div>
         )}
 
         {report.notes && (
           <div>
             <h3 className="text-sm font-semibold text-neutral-300 mb-2">Notes</h3>
-            <p className="text-neutral-200 whitespace-pre-wrap">{report.notes}</p>
+            <p className="text-black whitespace-pre-wrap">{report.notes}</p>
           </div>
         )}
       </div>

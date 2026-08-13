@@ -18,7 +18,7 @@ export default async function BriefListPage() {
   return (
     <AppShell>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-white">Daily Briefs</h1>
+        <h1 className="text-xl font-bold text-black">Daily Briefs</h1>
         {canPost && (
           <Link
             href="/brief/new"
@@ -41,7 +41,7 @@ export default async function BriefListPage() {
               >
                 <div className="flex items-baseline justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-semibold text-white">
+                    <h2 className="font-semibold text-black">
                       {lang === "EN" ? brief.titleEn : brief.titleEs}
                     </h2>
                     <span className="text-[10px] font-semibold text-neutral-500 border border-neutral-700 rounded px-1.5 py-0.5">

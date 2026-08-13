@@ -17,7 +17,7 @@ export default async function AnnouncementsPage() {
 
   return (
     <AppShell>
-      <h1 className="text-xl font-bold text-white mb-6">Announcements</h1>
+      <h1 className="text-xl font-bold text-black mb-6">Announcements</h1>
 
       {canPost && (
         <div className="mb-6">

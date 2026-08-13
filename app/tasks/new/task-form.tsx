@@ -6,7 +6,7 @@ import { createTaskAction, type TaskFormState } from "@/lib/actions/tasks";
 const initialState: TaskFormState = {};
 
 const fieldClass =
-  "w-full rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500";
+  "w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500";
 
 export default function TaskForm({ people }: { people: { id: string; name: string }[] }) {
   const [state, formAction, pending] = useActionState(createTaskAction, initialState);

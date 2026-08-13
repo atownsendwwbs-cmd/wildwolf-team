@@ -25,7 +25,7 @@ export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
           setUserRoleAction(userId, next);
         });
       }}
-      className="rounded-md bg-neutral-900 border border-neutral-700 text-white text-sm px-2 py-1.5 disabled:opacity-60"
+      className="rounded-md bg-neutral-900 border border-neutral-700 text-black text-sm px-2 py-1.5 disabled:opacity-60"
     >
       <option value="EMPLOYEE">Employee</option>
       <option value="MANAGER">Manager</option>
@@ -75,7 +75,7 @@ export function NameEditor({ userId, name }: { userId: string; name: string }) {
           setValue(displayName);
           setOpen(true);
         }}
-        className="text-white font-medium hover:underline decoration-dotted underline-offset-4"
+        className="text-black font-medium hover:underline decoration-dotted underline-offset-4"
         title="Click to rename"
       >
         {displayName}
@@ -90,7 +90,7 @@ export function NameEditor({ userId, name }: { userId: string; name: string }) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         autoFocus
-        className="w-36 rounded-md bg-neutral-950 border border-neutral-700 text-white text-sm px-2 py-1"
+        className="w-36 rounded-md bg-neutral-950 border border-neutral-700 text-black text-sm px-2 py-1"
       />
       <button
         type="button"
@@ -155,7 +155,7 @@ export function ResetPinControl({ userId, hasPin }: { userId: string; hasPin: bo
         value={pin}
         onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
         placeholder="4-digit PIN"
-        className="w-24 rounded-md bg-neutral-950 border border-neutral-700 text-white text-sm px-2 py-1.5"
+        className="w-24 rounded-md bg-neutral-950 border border-neutral-700 text-black text-sm px-2 py-1.5"
       />
       <button
         type="button"

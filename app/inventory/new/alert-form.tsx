@@ -14,7 +14,7 @@ const CATEGORIES = [
 ];
 
 const fieldClass =
-  "w-full rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500";
+  "w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500";
 
 export default function AlertForm() {
   const [state, formAction, pending] = useActionState(createAlertAction, initialState);
@@ -49,7 +49,7 @@ export default function AlertForm() {
                 }}
                 className="accent-orange-600"
               />
-              <span className="text-sm text-neutral-200">{c.label}</span>
+              <span className="text-sm text-black">{c.label}</span>
             </label>
           ))}
         </div>

@@ -63,15 +63,15 @@ export default function InstallPrompt() {
   if (dismissed || !status) return null;
 
   return (
-    <div className="border-b border-orange-900/60 bg-orange-950/40">
+    <div className="border-b border-orange-200 bg-orange-50">
       <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3 text-sm">
         {status.platform === "ios" ? (
-          <p className="text-orange-200">
+          <p className="text-orange-800">
             Add this to your home screen: tap <strong>Share</strong>{" "}
             <span aria-hidden>⬆️</span> then <strong>Add to Home Screen</strong>.
           </p>
         ) : (
-          <p className="text-orange-200">Install this app for quick access from your home screen.</p>
+          <p className="text-orange-800">Install this app for quick access from your home screen.</p>
         )}
         <div className="flex items-center gap-3 shrink-0">
           {status.platform === "android" && status.deferredPrompt && (
@@ -86,7 +86,7 @@ export default function InstallPrompt() {
           <button
             type="button"
             onClick={dismiss}
-            className="text-orange-300 hover:text-white"
+            className="text-orange-700 hover:text-black"
             aria-label="Dismiss"
           >
             ✕

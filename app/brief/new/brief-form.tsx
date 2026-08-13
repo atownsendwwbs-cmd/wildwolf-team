@@ -48,7 +48,7 @@ const COPY = {
 } as const;
 
 const fieldClass =
-  "w-full rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 leading-relaxed";
+  "w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 leading-relaxed";
 
 export default function BriefForm() {
   const [state, formAction, pending] = useActionState(createBriefAction, initialState);
@@ -68,7 +68,7 @@ export default function BriefForm() {
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 sourceLang === lang
                   ? "bg-orange-600 text-white"
-                  : "bg-neutral-900 text-neutral-400 hover:text-white"
+                  : "bg-neutral-900 text-neutral-400 hover:text-black"
               }`}
             >
               {lang === "EN" ? "English" : "Español"}
@@ -85,13 +85,13 @@ export default function BriefForm() {
       </div>
 
       <div className="border-t border-neutral-800 pt-6">
-        <h3 className="text-sm font-semibold text-white">{c.intro}</h3>
+        <h3 className="text-sm font-semibold text-black">{c.intro}</h3>
         <p className="text-xs text-neutral-500 mb-2">{c.introHint}</p>
         <textarea name="intro" rows={3} placeholder={c.introPlaceholder} className={fieldClass} />
       </div>
 
       <div className="border-t border-neutral-800 pt-6">
-        <h3 className="text-sm font-semibold text-white">{c.production}</h3>
+        <h3 className="text-sm font-semibold text-black">{c.production}</h3>
         <p className="text-xs text-neutral-500 mb-3">{c.productionHint}</p>
         <div className="space-y-3">
           {SALES_CHANNELS.map((channel) => (
@@ -110,13 +110,13 @@ export default function BriefForm() {
       </div>
 
       <div className="border-t border-neutral-800 pt-6">
-        <h3 className="text-sm font-semibold text-white">{c.packing}</h3>
+        <h3 className="text-sm font-semibold text-black">{c.packing}</h3>
         <p className="text-xs text-neutral-500 mb-2">{c.packingHint}</p>
         <textarea name="packing" rows={4} placeholder={c.packingPlaceholder} className={fieldClass} />
       </div>
 
       <div className="border-t border-neutral-800 pt-6">
-        <h3 className="text-sm font-semibold text-white">{c.special}</h3>
+        <h3 className="text-sm font-semibold text-black">{c.special}</h3>
         <p className="text-xs text-neutral-500 mb-2">{c.specialHint}</p>
         <textarea name="special" rows={4} placeholder={c.specialPlaceholder} className={fieldClass} />
       </div>

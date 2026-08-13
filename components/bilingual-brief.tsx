@@ -82,7 +82,7 @@ export default function BilingualBrief({
   const hasProduction = SALES_CHANNELS.some((c) => production[c.key].trim());
   const proseClass =
     size === "hero"
-      ? "text-neutral-200 whitespace-pre-wrap leading-relaxed text-base"
+      ? "text-black whitespace-pre-wrap leading-relaxed text-base"
       : "text-sm text-neutral-400 whitespace-pre-wrap leading-relaxed";
 
   return (
@@ -100,7 +100,7 @@ export default function BilingualBrief({
               className={`px-2.5 py-1 text-xs font-semibold transition-colors ${
                 lang === l
                   ? "bg-orange-600 text-white"
-                  : "bg-neutral-900 text-neutral-400 hover:text-white"
+                  : "bg-neutral-900 text-neutral-400 hover:text-black"
               }`}
             >
               {l}
@@ -117,7 +117,7 @@ export default function BilingualBrief({
         </p>
       )}
 
-      <h2 className={size === "hero" ? "text-2xl font-bold text-white" : "font-semibold text-white"}>
+      <h2 className={size === "hero" ? "text-2xl font-bold text-black" : "font-semibold text-black"}>
         {title}
       </h2>
 

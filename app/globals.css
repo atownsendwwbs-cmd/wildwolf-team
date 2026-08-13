@@ -1,59 +1,113 @@
 @import "tailwindcss";
 
 /*
-  "Timber & Amber" theme: warm charcoal (not neutral gray) as the base,
-  a vivid amber-orange as the primary accent, and a cool steel-blue as
-  the secondary accent for informational/manager-tier elements.
-  These override Tailwind's built-in `neutral`, `orange`, and `sky`
-  scales, so existing `bg-neutral-900`, `text-orange-400`, etc. classes
-  across the app pick up the new palette automatically.
+  Wild Wolf brand theme, built from the real brand book: North Star Blue
+  (#051c2c), Wolf Gray (#7b868c), and Canyon Red (#b73d25), on a bright
+  warm-paper base instead of the old dark theme. These override Tailwind's
+  built-in `neutral`, `orange`, `red`, `green`, and `amber` scales, so
+  existing `bg-neutral-900`, `text-orange-400`, etc. classes across the
+  app pick up the new palette automatically — the numbers don't follow
+  Tailwind's usual light-to-dark convention, they're tuned per how each
+  one is actually used in the app (backgrounds vs. borders vs. text).
 */
 @theme {
-  --color-neutral-50: #f7f4ef;
-  --color-neutral-100: #ede7dc;
-  --color-neutral-200: #d9cfbd;
-  --color-neutral-300: #b8ab93;
-  --color-neutral-400: #8f8168;
-  --color-neutral-500: #6b5f4c;
-  --color-neutral-600: #4a4132;
-  --color-neutral-700: #332c22;
-  --color-neutral-800: #221d16;
-  --color-neutral-900: #17130e;
-  --color-neutral-950: #0e0b07;
+  /* Primary text color — brand navy-black, used via `text-black` in place
+     of the old dark theme's `text-white`. */
+  --color-black: #101c26;
 
-  --color-orange-50: #fff6e8;
-  --color-orange-100: #ffe7c2;
-  --color-orange-200: #ffcc84;
-  --color-orange-300: #ffab45;
-  --color-orange-400: #ff8f1f;
-  --color-orange-500: #f37a08;
-  --color-orange-600: #db6600;
-  --color-orange-700: #b34f02;
-  --color-orange-800: #8a3d08;
-  --color-orange-900: #6b3009;
-  --color-orange-950: #3d1a03;
+  --color-neutral-50: #ffffff;
+  --color-neutral-100: #fdfcfa;
+  --color-neutral-200: #f6f3ec;
+  --color-neutral-300: #362f24;
+  --color-neutral-400: #5c5445;
+  --color-neutral-500: #837a68;
+  --color-neutral-600: #bdb49f;
+  --color-neutral-700: #ded7c6;
+  --color-neutral-800: #eeeade;
+  --color-neutral-900: #ffffff;
+  --color-neutral-950: #f3efe4;
 
-  --color-sky-50: #eef6fb;
-  --color-sky-100: #d8ebf5;
-  --color-sky-200: #b3d6ea;
-  --color-sky-300: #82b9da;
-  --color-sky-400: #5697c4;
-  --color-sky-500: #3a7cac;
-  --color-sky-600: #2c6389;
-  --color-sky-700: #274f6c;
-  --color-sky-800: #234058;
-  --color-sky-900: #1c2f40;
-  --color-sky-950: #121e29;
+  /* Canyon Red — primary accent (buttons, links, active states) */
+  --color-orange-50: #fbeae5;
+  --color-orange-100: #f5d2c8;
+  --color-orange-200: #edb3a2;
+  --color-orange-300: #8a2f1c;
+  --color-orange-400: #a83a22;
+  --color-orange-500: #c04a2e;
+  --color-orange-600: #b73d25;
+  --color-orange-700: #97321f;
+  --color-orange-800: #7a2818;
+  --color-orange-900: #602013;
+  --color-orange-950: #f0c3b6;
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* North Star Blue — secondary/navy scale used for the nav & dark surfaces */
+  --color-sky-50: #eef3f6;
+  --color-sky-100: #d3dee5;
+  --color-sky-200: #a6bdc9;
+  --color-sky-300: #6f8fa0;
+  --color-sky-400: #3f6478;
+  --color-sky-500: #234258;
+  --color-sky-600: #123047;
+  --color-sky-700: #0c2536;
+  --color-sky-800: #081c2b;
+  --color-sky-900: #051c2c;
+  --color-sky-950: #051426;
+
+  --color-red-50: #fdeeec;
+  --color-red-100: #fad9d4;
+  --color-red-200: #f3b6ac;
+  --color-red-300: #8a241a;
+  --color-red-400: #a3291c;
+  --color-red-500: #b23a26;
+  --color-red-600: #9c2f1e;
+  --color-red-700: #7c2618;
+  --color-red-800: #641d12;
+  --color-red-900: #4c150c;
+  --color-red-950: #f6c9bf;
+
+  --color-green-50: #eaf6ee;
+  --color-green-100: #cfead9;
+  --color-green-200: #9fd6b3;
+  --color-green-300: #175c34;
+  --color-green-400: #1c6b3d;
+  --color-green-500: #237344;
+  --color-green-600: #1c5c37;
+  --color-green-700: #17492c;
+  --color-green-800: #123a23;
+  --color-green-900: #0e2d1b;
+  --color-green-950: #bfe6cc;
+
+  --color-amber-50: #fdf3e2;
+  --color-amber-100: #fbe4b8;
+  --color-amber-200: #f6cd7c;
+  --color-amber-300: #7a5406;
+  --color-amber-400: #8f640c;
+  --color-amber-500: #a06e0c;
+  --color-amber-600: #b5883a;
+  --color-amber-700: #634509;
+  --color-amber-800: #4d3608;
+  --color-amber-900: #3a2906;
+  --color-amber-950: #f6cd7c;
+
+  --font-sans: var(--font-pt-mono);
+  --font-mono: var(--font-pt-mono);
+  --font-display: var(--font-oswald);
 }
 
 body {
   background: var(--color-neutral-950);
-  color: var(--color-neutral-100);
+  color: var(--color-black);
   /* Keep content clear of notches / home indicators when installed as a
      standalone app (no browser chrome to provide that spacing itself). */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }

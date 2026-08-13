@@ -25,7 +25,7 @@ export default function AddUserForm() {
           name="name"
           required
           placeholder="Full name"
-          className="rounded-lg bg-neutral-950 border border-neutral-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="rounded-lg bg-neutral-950 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
       <div>
@@ -39,7 +39,7 @@ export default function AddUserForm() {
           maxLength={4}
           pattern="[0-9]{4}"
           placeholder="4 digits"
-          className="rounded-lg bg-neutral-950 border border-neutral-700 text-white px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="rounded-lg bg-neutral-950 border border-neutral-700 text-black px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
       <div>
@@ -47,7 +47,7 @@ export default function AddUserForm() {
         <select
           name="role"
           defaultValue="EMPLOYEE"
-          className="rounded-lg bg-neutral-950 border border-neutral-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="rounded-lg bg-neutral-950 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
         >
           <option value="EMPLOYEE">Employee</option>
           <option value="MANAGER">Manager</option>

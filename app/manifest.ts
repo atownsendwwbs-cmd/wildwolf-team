@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Daily briefs, inventory alerts, and end-of-day reports for the production floor.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0e0b07",
-    theme_color: "#db6600",
+    background_color: "#051c2c",
+    theme_color: "#051c2c",
     orientation: "portrait-primary",
     icons: [
       {

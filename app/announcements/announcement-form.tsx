@@ -46,7 +46,7 @@ export default function AnnouncementForm() {
               className={`px-2.5 py-1 text-xs font-semibold transition-colors ${
                 sourceLang === lang
                   ? "bg-orange-600 text-white"
-                  : "bg-neutral-900 text-neutral-400 hover:text-white"
+                  : "bg-neutral-900 text-neutral-400 hover:text-black"
               }`}
             >
               {lang}
@@ -60,7 +60,7 @@ export default function AnnouncementForm() {
         rows={2}
         required
         placeholder={c.placeholder}
-        className="w-full rounded-lg bg-neutral-950 border border-neutral-700 text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="w-full rounded-lg bg-neutral-950 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
       />
       <div className="flex items-center justify-between mt-3">
         <button

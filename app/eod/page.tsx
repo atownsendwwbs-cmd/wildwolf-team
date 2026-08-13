@@ -14,7 +14,7 @@ export default async function EodListPage() {
   return (
     <AppShell>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-white">End of Day Reports</h1>
+        <h1 className="text-xl font-bold text-black">End of Day Reports</h1>
         <Link
           href="/eod/new"
           className="rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-sm font-semibold px-4 py-2 transition-colors"
@@ -37,7 +37,7 @@ export default async function EodListPage() {
                   className="block rounded-lg border border-neutral-800 bg-neutral-900 p-4 hover:border-neutral-700 transition-colors"
                 >
                   <div className="flex items-baseline justify-between gap-2">
-                    <h2 className="font-semibold text-white">{report.author.name}</h2>
+                    <h2 className="font-semibold text-black">{report.author.name}</h2>
                     <span className="text-xs text-neutral-500 shrink-0">
                       {formatDateTime(report.date)}
                     </span>

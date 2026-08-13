@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -18,9 +19,9 @@ export default async function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-neutral-950 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🐺</div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Wild <span className="text-orange-400">Wolf</span> Warehouse
+          <Image src="/brand/wolf-icon-navy.png" alt="" width={56} height={56} className="mx-auto mb-3" />
+          <h1 className="text-2xl font-bold text-black tracking-tight">
+            Wild <span className="text-orange-600">Wolf</span> Warehouse
           </h1>
           <p className="text-neutral-400 mt-1">Sign in to post or manage — no PIN? Just browse instead.</p>
         </div>

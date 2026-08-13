@@ -27,7 +27,7 @@ export default function LanguagePreference({ initial }: { initial: Lang }) {
           className={`px-2 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
             lang === l
               ? "bg-orange-600 text-white"
-              : "bg-neutral-900 text-neutral-400 hover:text-white"
+              : "bg-neutral-900 text-neutral-400 hover:text-black"
           }`}
         >
           {l}

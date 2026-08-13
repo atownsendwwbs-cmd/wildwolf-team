@@ -73,7 +73,7 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between mt-5 pt-4 border-t border-neutral-800">
                 <p className="text-xs text-neutral-500">by {latestBrief.author.name}</p>
                 <div className="flex items-center gap-4">
-                  <Link href="/brief" className="text-sm text-neutral-400 hover:text-white font-medium">
+                  <Link href="/brief" className="text-sm text-neutral-400 hover:text-black font-medium">
                     Past briefs
                   </Link>
                   {canPostBrief && (
@@ -109,7 +109,7 @@ export default async function DashboardPage() {
         {user && myTasks.length > 0 && (
           <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wide">My Tasks</h2>
+              <h2 className="text-sm font-bold text-black uppercase tracking-wide">My Tasks</h2>
               <Link href="/tasks" className="text-xs text-orange-400 hover:text-orange-300 font-medium shrink-0">
                 View all
               </Link>
@@ -121,7 +121,7 @@ export default async function DashboardPage() {
                   className="flex items-center justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
                 >
                   <div className="min-w-0">
-                    <span className="text-sm text-white">{task.title}</span>
+                    <span className="text-sm text-black">{task.title}</span>
                     {!task.assignedTo && (
                       <span className="ml-2 text-xs text-neutral-500">(everyone)</span>
                     )}
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wide">
+              <h2 className="text-sm font-bold text-black uppercase tracking-wide">
                 Inventory &amp; Supply Alerts
                 {criticalCount > 0 && (
                   <span className="ml-2 text-xs font-semibold text-red-400 normal-case tracking-normal">
@@ -166,7 +166,7 @@ export default async function DashboardPage() {
                     className="flex items-center justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-sm text-white truncate">{alert.itemName}</span>
+                      <span className="text-sm text-black truncate">{alert.itemName}</span>
                       <CategoryBadge category={alert.category} />
                     </div>
                     {alert.category === "FINISHED_GOOD" && alert.stockLevel && (
@@ -186,7 +186,7 @@ export default async function DashboardPage() {
 
           <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wide">
+              <h2 className="text-sm font-bold text-black uppercase tracking-wide">
                 Recent End-of-Day Reports
               </h2>
               <Link href="/eod" className="text-xs text-orange-400 hover:text-orange-300 font-medium shrink-0">
@@ -203,7 +203,7 @@ export default async function DashboardPage() {
                       href={`/eod/${report.id}`}
                       className="flex items-center justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2 hover:border-neutral-600 transition-colors"
                     >
-                      <span className="text-sm text-white">{report.author.name}</span>
+                      <span className="text-sm text-black">{report.author.name}</span>
                       <span className="text-xs text-neutral-500">{formatDateTime(report.date)}</span>
                     </Link>
                   </li>
@@ -219,14 +219,14 @@ export default async function DashboardPage() {
             href="/inventory/new"
             className="rounded-lg border border-neutral-800 bg-neutral-900 hover:border-orange-700 hover:bg-neutral-900/80 transition-colors p-4 text-center"
           >
-            <p className="font-semibold text-white text-sm">Report low item</p>
+            <p className="font-semibold text-black text-sm">Report low item</p>
             <p className="text-xs text-neutral-500 mt-1">Finished goods, raw materials, supplies</p>
           </Link>
           <Link
             href="/eod/new"
             className="rounded-lg border border-neutral-800 bg-neutral-900 hover:border-orange-700 hover:bg-neutral-900/80 transition-colors p-4 text-center"
           >
-            <p className="font-semibold text-white text-sm">Submit end-of-day report</p>
+            <p className="font-semibold text-black text-sm">Submit end-of-day report</p>
             <p className="text-xs text-neutral-500 mt-1">Packed, sorted out, notes, hand-off</p>
           </Link>
           {canPostBrief && (
@@ -234,7 +234,7 @@ export default async function DashboardPage() {
               href="/tasks/new"
               className="rounded-lg border border-neutral-800 bg-neutral-900 hover:border-orange-700 hover:bg-neutral-900/80 transition-colors p-4 text-center"
             >
-              <p className="font-semibold text-white text-sm">Assign a task</p>
+              <p className="font-semibold text-black text-sm">Assign a task</p>
               <p className="text-xs text-neutral-500 mt-1">Send it to someone&apos;s phone</p>
             </Link>
           )}

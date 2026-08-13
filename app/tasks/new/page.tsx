@@ -14,7 +14,7 @@ export default async function NewTaskPage() {
 
   return (
     <AppShell>
-      <h1 className="text-xl font-bold text-white mb-6">Assign a task</h1>
+      <h1 className="text-xl font-bold text-black mb-6">Assign a task</h1>
       <TaskForm people={people} />
     </AppShell>
   );

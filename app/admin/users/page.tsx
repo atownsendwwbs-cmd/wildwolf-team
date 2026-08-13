@@ -11,7 +11,7 @@ export default async function AdminUsersPage() {
 
   return (
     <AppShell>
-      <h1 className="text-xl font-bold text-white mb-6">Team</h1>
+      <h1 className="text-xl font-bold text-black mb-6">Team</h1>
       <p className="text-sm text-neutral-400 mb-6">
         Anyone can browse the app without signing in. People listed here with a PIN can sign in to
         post briefs, report inventory, submit end-of-day reports, or manage the team — so you know

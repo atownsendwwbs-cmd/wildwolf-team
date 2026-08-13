@@ -41,7 +41,7 @@ export default function LineItemEditor({
             value={row.label}
             onChange={(e) => updateRow(row.id, "label", e.target.value)}
             placeholder={labelPlaceholder}
-            className="flex-[3] min-w-0 rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="flex-[3] min-w-0 rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <input
             type="text"
@@ -49,7 +49,7 @@ export default function LineItemEditor({
             value={row.quantity}
             onChange={(e) => updateRow(row.id, "quantity", e.target.value)}
             placeholder="Qty"
-            className="flex-[1] min-w-0 rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="flex-[1] min-w-0 rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <input
             type="text"
@@ -57,13 +57,13 @@ export default function LineItemEditor({
             value={row.detail}
             onChange={(e) => updateRow(row.id, "detail", e.target.value)}
             placeholder={detailPlaceholder}
-            className="flex-[3] min-w-0 rounded-lg bg-neutral-900 border border-neutral-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="flex-[3] min-w-0 rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <button
             type="button"
             onClick={() => removeRow(row.id)}
             disabled={rows.length === 1}
-            className="shrink-0 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800 disabled:opacity-30 px-3 py-2 text-sm"
+            className="shrink-0 rounded-lg border border-neutral-700 text-neutral-400 hover:text-black hover:bg-neutral-800 disabled:opacity-30 px-3 py-2 text-sm"
             aria-label="Remove row"
           >
             ✕

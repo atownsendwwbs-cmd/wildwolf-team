@@ -7,7 +7,7 @@ export default async function NewBriefPage() {
 
   return (
     <AppShell>
-      <h1 className="text-xl font-bold text-white mb-6">Post today&apos;s brief</h1>
+      <h1 className="text-xl font-bold text-black mb-6">Post today&apos;s brief</h1>
       <BriefForm />
     </AppShell>
   );

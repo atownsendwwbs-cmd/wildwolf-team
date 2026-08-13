@@ -7,7 +7,7 @@ export default async function NewEodPage() {
 
   return (
     <AppShell>
-      <h1 className="text-xl font-bold text-white mb-6">End of day report</h1>
+      <h1 className="text-xl font-bold text-black mb-6">End of day report</h1>
       <EodForm />
     </AppShell>
   );
