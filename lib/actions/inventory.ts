@@ -102,7 +102,7 @@ export async function createAlertAction(
     },
   });
 
-  notifyManagers(user.id, {
+  await notifyManagers(user.id, {
     EN: {
       title: `Low ${CATEGORY_LABEL.EN[category]} reported`,
       body: `${itemName} — reported by ${user.name}`,

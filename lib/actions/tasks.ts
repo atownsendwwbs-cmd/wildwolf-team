@@ -73,7 +73,7 @@ export async function createTaskAction(
   }
 
   const target = assignee ? assignee.name : department ? department.name : null;
-  sendLocalizedPushToUsers(recipientIds, {
+  await sendLocalizedPushToUsers(recipientIds, {
     EN: {
       title: target ? `New task for ${target}` : "New task for everyone",
       body: title,
@@ -109,7 +109,7 @@ export async function completeTaskAction(taskId: string) {
     data: { status: "DONE", completedAt: new Date() },
   });
 
-  notifyUser(task.assignedById, user.id, {
+  await notifyUser(task.assignedById, user.id, {
     EN: {
       title: "Task completed",
       body: `${user.name} marked "${task.title}" done`,

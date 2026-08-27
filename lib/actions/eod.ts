@@ -67,7 +67,7 @@ export async function createEodReportAction(
     },
   });
 
-  notifyManagers(user.id, {
+  await notifyManagers(user.id, {
     EN: {
       title: "End-of-day report submitted",
       body: `${user.name} just submitted their end-of-day report`,

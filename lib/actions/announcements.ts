@@ -54,7 +54,7 @@ export async function createAnnouncementAction(
     },
   });
 
-  sendLocalizedPushToUsers("all", {
+  await sendLocalizedPushToUsers("all", {
     EN: {
       title: `Announcement from ${user.name}`,
       body: messageEn,
@@ -68,7 +68,7 @@ export async function createAnnouncementAction(
   }).catch(() => {});
 
   if (mentionedUserIds.length > 0) {
-    sendLocalizedPushToUsers(mentionedUserIds, {
+    await sendLocalizedPushToUsers(mentionedUserIds, {
       EN: {
         title: `${user.name} mentioned you`,
         body: messageEn,
