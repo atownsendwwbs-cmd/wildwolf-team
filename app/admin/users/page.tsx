@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AppShell from "@/components/app-shell";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -41,6 +42,7 @@ export default async function AdminUsersPage() {
               <th className="text-left px-4 py-2.5 font-medium">Department</th>
               <th className="text-left px-4 py-2.5 font-medium">Status</th>
               <th className="text-left px-4 py-2.5 font-medium">PIN</th>
+              <th className="text-left px-4 py-2.5 font-medium"></th>
             </tr>
           </thead>
           <tbody>
@@ -63,6 +65,14 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="px-4 py-3">
                   <ResetPinControl userId={u.id} hasPin={!!u.pinHash} />
+                </td>
+                <td className="px-4 py-3">
+                  <Link
+                    href={`/admin/directives/${u.id}`}
+                    className="text-xs text-orange-400 hover:text-orange-300 font-medium whitespace-nowrap"
+                  >
+                    Directives →
+                  </Link>
                 </td>
               </tr>
             ))}

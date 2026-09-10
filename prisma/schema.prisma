@@ -38,6 +38,10 @@ model User {
   tasksCreated      Task[]             @relation("TaskAssignedBy")
   announcements     Announcement[]
   reactions         Reaction[]
+  directives        Directive[]        @relation("DirectivesForUser")
+  directivesWritten Directive[]        @relation("DirectivesCreatedBy")
+  projects          SpecialProject[]   @relation("ProjectsForUser")
+  projectsCreated   SpecialProject[]   @relation("ProjectsCreatedBy")
 
   @@index([departmentId])
 }
@@ -249,4 +253,47 @@ model Reaction {
 
   @@unique([messageType, messageId, userId, emoji])
   @@index([messageType, messageId])
+}
+
+// Admin-only, per-employee priority list. Always-current (not dated) --
+// the Admin edits it in place as priorities shift, rather than posting a
+// fresh entry every day. Only the assigned employee and Admins can see it.
+model Directive {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation("DirectivesForUser", fields: [userId], references: [id])
+  text        String
+  sortOrder   Int      @default(0)
+  createdById String
+  createdBy   User     @relation("DirectivesCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+enum ProjectStatus {
+  OPEN
+  DONE
+}
+
+// Admin-assigned special projects (replaces sending a Google Doc link) --
+// longer-form than a Directive, with an optional due date, and the
+// assigned employee can mark it done themselves.
+model SpecialProject {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation("ProjectsForUser", fields: [userId], references: [id])
+  title       String
+  details     String?
+  dueDate     DateTime?
+  status      ProjectStatus @default(OPEN)
+  completedAt DateTime?
+  createdById String
+  createdBy   User          @relation("ProjectsCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }

@@ -7,51 +7,61 @@ import { CategoryBadge, UrgencyBadge, StockLevelBadge, RawMaterialStatusBadge } 
 import { db } from "@/lib/db";
 import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { getReactionSummaries } from "@/lib/reactions";
-import { formatDateTime, isSameDay } from "@/lib/format";
+import { formatDate, formatDateTime, isSameDay } from "@/lib/format";
 import { isCriticalAlert } from "@/lib/inventory";
 import { completeTaskAction } from "@/lib/actions/tasks";
+import { completeProjectAction } from "@/lib/actions/directives";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const canPostBrief = !!user && MANAGER_ROLES.includes(user.role);
 
-  const [latestBrief, openAlerts, recentReports, myTasks, recentAnnouncements] = await Promise.all([
-    db.dailyBrief.findFirst({
-      orderBy: { date: "desc" },
-      include: { author: { select: { name: true } } },
-    }),
-    db.inventoryAlert.findMany({
-      where: { status: "OPEN" },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: { reportedBy: { select: { name: true } } },
-    }),
-    db.endOfDayReport.findMany({
-      orderBy: { date: "desc" },
-      take: 4,
-      include: { author: { select: { name: true } } },
-    }),
-    user
-      ? db.task.findMany({
-          where: {
-            status: "OPEN",
-            OR: [
-              { assignedToId: user.id },
-              { assignedToId: null, departmentId: null },
-              ...(user.departmentId ? [{ departmentId: user.departmentId }] : []),
-            ],
-          },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-          include: { assignedTo: { select: { name: true } }, department: { select: { name: true } } },
-        })
-      : Promise.resolve([]),
-    db.announcement.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      include: { author: { select: { name: true } } },
-    }),
-  ]);
+  const [latestBrief, openAlerts, recentReports, myTasks, recentAnnouncements, myDirectives, myProjects] =
+    await Promise.all([
+      db.dailyBrief.findFirst({
+        orderBy: { date: "desc" },
+        include: { author: { select: { name: true } } },
+      }),
+      db.inventoryAlert.findMany({
+        where: { status: "OPEN" },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        include: { reportedBy: { select: { name: true } } },
+      }),
+      db.endOfDayReport.findMany({
+        orderBy: { date: "desc" },
+        take: 4,
+        include: { author: { select: { name: true } } },
+      }),
+      user
+        ? db.task.findMany({
+            where: {
+              status: "OPEN",
+              OR: [
+                { assignedToId: user.id },
+                { assignedToId: null, departmentId: null },
+                ...(user.departmentId ? [{ departmentId: user.departmentId }] : []),
+              ],
+            },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+            include: { assignedTo: { select: { name: true } }, department: { select: { name: true } } },
+          })
+        : Promise.resolve([]),
+      db.announcement.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        include: { author: { select: { name: true } } },
+      }),
+      // Directives/projects are private -- only ever fetched for the
+      // signed-in user's own id, never for anyone else.
+      user
+        ? db.directive.findMany({ where: { userId: user.id }, orderBy: { sortOrder: "asc" } })
+        : Promise.resolve([]),
+      user
+        ? db.specialProject.findMany({ where: { userId: user.id, status: "OPEN" }, orderBy: { createdAt: "asc" } })
+        : Promise.resolve([]),
+    ]);
 
   const [briefReactions, taskReactions, announcementReactions] = await Promise.all([
     getReactionSummaries("BRIEF", latestBrief ? [latestBrief.id] : [], user?.id ?? null),
@@ -73,6 +83,56 @@ export default async function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-6">
+        {/* My Priorities — private to the signed-in user, front and center */}
+        {user && (myDirectives.length > 0 || myProjects.length > 0) && (
+          <section className="rounded-lg border border-orange-800/60 bg-gradient-to-br from-neutral-900 to-neutral-900/60 p-4 sm:p-5">
+            <h2 className="text-sm font-bold text-black uppercase tracking-wide mb-3">
+              Your Priorities Today
+            </h2>
+            {myDirectives.length > 0 && (
+              <ul className="space-y-2 mb-4">
+                {myDirectives.map((d, i) => (
+                  <li
+                    key={d.id}
+                    className="flex items-start gap-2.5 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
+                  >
+                    <span className="text-orange-400 font-bold text-sm shrink-0">{i + 1}.</span>
+                    <span className="text-sm text-black">{d.text}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {myProjects.length > 0 && (
+              <div className="space-y-2">
+                {myProjects.map((p) => (
+                  <div
+                    key={p.id}
+                    className="rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2.5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-black">{p.title}</p>
+                        {p.details && <p className="text-xs text-neutral-400 mt-0.5">{p.details}</p>}
+                        {p.dueDate && (
+                          <p className="text-xs text-neutral-500 mt-1">Due {formatDate(p.dueDate)}</p>
+                        )}
+                      </div>
+                      <form action={completeProjectAction.bind(null, p.id)} className="shrink-0">
+                        <button
+                          type="submit"
+                          className="text-xs px-2.5 py-1 rounded-md border border-green-800 text-green-400 hover:bg-green-950/40 transition-colors whitespace-nowrap"
+                        >
+                          Mark done
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Daily Brief — the focal point of the dashboard */}
           <div className="lg:col-span-2">
