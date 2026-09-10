@@ -11,6 +11,7 @@ import { formatDate, formatDateTime, isSameDay } from "@/lib/format";
 import { isCriticalAlert } from "@/lib/inventory";
 import { completeTaskAction } from "@/lib/actions/tasks";
 import { completeProjectAction } from "@/lib/actions/directives";
+import { groupDirectives } from "@/lib/directives";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -79,6 +80,7 @@ export default async function DashboardPage() {
 
   const briefIsToday = latestBrief && isSameDay(latestBrief.date, new Date());
   const criticalCount = openAlerts.filter(isCriticalAlert).length;
+  const myDirectiveGroups = groupDirectives(myDirectives);
 
   return (
     <AppShell>
@@ -89,19 +91,26 @@ export default async function DashboardPage() {
             <h2 className="text-sm font-bold text-black uppercase tracking-wide mb-3">
               Your Priorities Today
             </h2>
-            {myDirectives.length > 0 && (
-              <ul className="space-y-2 mb-4">
-                {myDirectives.map((d, i) => (
-                  <li
-                    key={d.id}
-                    className="flex items-start gap-2.5 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
-                  >
-                    <span className="text-orange-400 font-bold text-sm shrink-0">{i + 1}.</span>
-                    <span className="text-sm text-black">{d.text}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {myDirectiveGroups.map((group) => (
+              <div key={group.section ?? "__none"} className="mb-4">
+                {group.section && (
+                  <h3 className="text-xs font-semibold text-orange-400 uppercase tracking-wide mb-1.5">
+                    {group.section}
+                  </h3>
+                )}
+                <ul className="space-y-2">
+                  {group.items.map((d, i) => (
+                    <li
+                      key={d.id}
+                      className="flex items-start gap-2.5 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2"
+                    >
+                      <span className="text-orange-400 font-bold text-sm shrink-0">{i + 1}.</span>
+                      <span className="text-sm text-black">{d.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
             {myProjects.length > 0 && (
               <div className="space-y-2">
                 {myProjects.map((p) => (

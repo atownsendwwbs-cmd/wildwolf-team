@@ -4,6 +4,7 @@ import AppShell from "@/components/app-shell";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
+import { groupDirectives } from "@/lib/directives";
 import {
   updateDirectiveAction,
   deleteDirectiveAction,
@@ -31,6 +32,9 @@ export default async function AdminDirectivesPage({
 
   if (!person) notFound();
 
+  const directiveGroups = groupDirectives(directives);
+  const existingSections = [...new Set(directives.map((d) => d.section).filter((s): s is string => !!s))];
+
   const openProjects = projects.filter((p) => p.status === "OPEN");
   const doneProjects = projects.filter((p) => p.status === "DONE");
 
@@ -49,64 +53,88 @@ export default async function AdminDirectivesPage({
 
       <section className="mb-8">
         <h2 className="text-sm font-bold text-black uppercase tracking-wide mb-3">Daily Directives</h2>
-        {directives.length > 0 && (
-          <ul className="space-y-2 mb-4">
-            {directives.map((d, i) => (
-              <li
-                key={d.id}
-                className="flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2"
-              >
-                <span className="text-orange-400 font-bold text-sm shrink-0 w-5">{i + 1}.</span>
-                <form action={updateDirectiveAction.bind(null, d.id)} className="flex-1 flex items-center gap-2">
-                  <input
-                    type="text"
-                    name="text"
-                    defaultValue={d.text}
-                    maxLength={500}
-                    className="flex-1 rounded-md bg-neutral-950 border border-neutral-700 text-black px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  />
-                  <button
-                    type="submit"
-                    className="shrink-0 text-xs px-2.5 py-1.5 rounded-md border border-neutral-700 text-neutral-300 hover:bg-neutral-800 transition-colors"
+        {directiveGroups.map((group) => (
+          <div key={group.section ?? "__none"} className="mb-4">
+            {group.section && (
+              <h3 className="text-xs font-semibold text-orange-400 uppercase tracking-wide mb-2">
+                {group.section}
+              </h3>
+            )}
+            <ul className="space-y-2">
+              {group.items.map((d, i) => (
+                <li
+                  key={d.id}
+                  className="flex flex-wrap items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2"
+                >
+                  <span className="text-orange-400 font-bold text-sm shrink-0 w-5">{i + 1}.</span>
+                  <form
+                    action={updateDirectiveAction.bind(null, d.id)}
+                    className="flex-1 min-w-[240px] flex flex-wrap items-center gap-2"
                   >
-                    Save
-                  </button>
-                </form>
-                <div className="flex items-center gap-1 shrink-0">
-                  <form action={moveDirectiveAction.bind(null, d.id, "up")}>
+                    <input
+                      type="text"
+                      name="text"
+                      defaultValue={d.text}
+                      maxLength={500}
+                      className="flex-1 min-w-[180px] rounded-md bg-neutral-950 border border-neutral-700 text-black px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    <input
+                      type="text"
+                      name="section"
+                      defaultValue={d.section ?? ""}
+                      list="directive-sections"
+                      maxLength={60}
+                      placeholder="Section"
+                      className="w-36 rounded-md bg-neutral-950 border border-neutral-700 text-black px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
                     <button
                       type="submit"
-                      disabled={i === 0}
-                      className="text-neutral-400 hover:text-black disabled:opacity-30 disabled:hover:text-neutral-400 px-1.5 py-1"
-                      title="Move up"
+                      className="shrink-0 text-xs px-2.5 py-1.5 rounded-md border border-neutral-700 text-neutral-300 hover:bg-neutral-800 transition-colors"
                     >
-                      ↑
+                      Save
                     </button>
                   </form>
-                  <form action={moveDirectiveAction.bind(null, d.id, "down")}>
-                    <button
-                      type="submit"
-                      disabled={i === directives.length - 1}
-                      className="text-neutral-400 hover:text-black disabled:opacity-30 disabled:hover:text-neutral-400 px-1.5 py-1"
-                      title="Move down"
-                    >
-                      ↓
-                    </button>
-                  </form>
-                  <form action={deleteDirectiveAction.bind(null, d.id)}>
-                    <button
-                      type="submit"
-                      className="text-xs px-2 py-1.5 rounded-md border border-red-900 text-red-400 hover:bg-red-950/40 transition-colors"
-                      title="Remove"
-                    >
-                      ✕
-                    </button>
-                  </form>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <form action={moveDirectiveAction.bind(null, d.id, "up")}>
+                      <button
+                        type="submit"
+                        disabled={i === 0}
+                        className="text-neutral-400 hover:text-black disabled:opacity-30 disabled:hover:text-neutral-400 px-1.5 py-1"
+                        title="Move up"
+                      >
+                        ↑
+                      </button>
+                    </form>
+                    <form action={moveDirectiveAction.bind(null, d.id, "down")}>
+                      <button
+                        type="submit"
+                        disabled={i === group.items.length - 1}
+                        className="text-neutral-400 hover:text-black disabled:opacity-30 disabled:hover:text-neutral-400 px-1.5 py-1"
+                        title="Move down"
+                      >
+                        ↓
+                      </button>
+                    </form>
+                    <form action={deleteDirectiveAction.bind(null, d.id)}>
+                      <button
+                        type="submit"
+                        className="text-xs px-2 py-1.5 rounded-md border border-red-900 text-red-400 hover:bg-red-950/40 transition-colors"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <datalist id="directive-sections">
+          {existingSections.map((s) => (
+            <option key={s} value={s} />
+          ))}
+        </datalist>
         <DirectiveAddForm userId={userId} />
       </section>
 

@@ -13,6 +13,7 @@ import { notifyUser } from "@/lib/push";
 const directiveSchema = z.object({
   userId: z.string().trim().min(1),
   text: z.string().trim().min(1, "Enter a directive").max(500),
+  section: z.string().trim().max(60).optional(),
 });
 
 export type DirectiveFormState = { error?: string };
@@ -25,6 +26,7 @@ export async function addDirectiveAction(
   const parsed = directiveSchema.safeParse({
     userId: formData.get("userId"),
     text: formData.get("text"),
+    section: formData.get("section") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -39,6 +41,7 @@ export async function addDirectiveAction(
     data: {
       userId: parsed.data.userId,
       text: parsed.data.text,
+      section: parsed.data.section || null,
       sortOrder: (last?.sortOrder ?? 0) + 1,
       createdById: admin.id,
     },
@@ -58,10 +61,11 @@ export async function updateDirectiveAction(id: string, formData: FormData) {
   await requireRole(["ADMIN"]);
   const trimmed = String(formData.get("text") ?? "").trim();
   if (!trimmed) return;
+  const section = String(formData.get("section") ?? "").trim();
 
   const directive = await db.directive.update({
     where: { id },
-    data: { text: trimmed.slice(0, 500) },
+    data: { text: trimmed.slice(0, 500), section: section ? section.slice(0, 60) : null },
   });
 
   revalidatePath("/");
@@ -76,6 +80,9 @@ export async function deleteDirectiveAction(id: string) {
   revalidatePath(`/admin/directives/${directive.userId}`);
 }
 
+// Reordering stays confined to the item's own section (matching same
+// userId AND section, including both being null/"ungrouped" together) so
+// nudging one item up/down can't accidentally jump it into another group.
 export async function moveDirectiveAction(id: string, direction: "up" | "down") {
   await requireRole(["ADMIN"]);
 
@@ -85,6 +92,7 @@ export async function moveDirectiveAction(id: string, direction: "up" | "down") 
   const neighbor = await db.directive.findFirst({
     where: {
       userId: current.userId,
+      section: current.section,
       sortOrder: direction === "up" ? { lt: current.sortOrder } : { gt: current.sortOrder },
     },
     orderBy: { sortOrder: direction === "up" ? "desc" : "asc" },

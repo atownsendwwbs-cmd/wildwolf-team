@@ -16,7 +16,7 @@ export default function DirectiveAddForm({ userId }: { userId: string }) {
         formAction(formData);
         formRef.current?.reset();
       }}
-      className="flex items-start gap-2"
+      className="flex flex-wrap items-start gap-2"
     >
       <input type="hidden" name="userId" value={userId} />
       <input
@@ -25,7 +25,15 @@ export default function DirectiveAddForm({ userId }: { userId: string }) {
         required
         maxLength={500}
         placeholder="e.g. Finish labeling the 12oz batch before lunch"
-        className="flex-1 rounded-lg bg-neutral-950 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="flex-1 min-w-[220px] rounded-lg bg-neutral-950 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+      />
+      <input
+        type="text"
+        name="section"
+        list="directive-sections"
+        maxLength={60}
+        placeholder="Section (optional)"
+        className="w-44 rounded-lg bg-neutral-950 border border-neutral-700 text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
       />
       <button
         type="submit"

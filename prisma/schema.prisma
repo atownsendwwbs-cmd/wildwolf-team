@@ -262,6 +262,10 @@ model Directive {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation("DirectivesForUser", fields: [userId], references: [id])
+  // Optional grouping label (e.g. "Morning Tasks", "Reporting") so a long
+  // list reads like a structured job description instead of one flat list.
+  // Null items render ungrouped, above any sections.
+  section     String?
   text        String
   sortOrder   Int      @default(0)
   createdById String
