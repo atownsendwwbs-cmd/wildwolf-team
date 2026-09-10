@@ -89,7 +89,7 @@ export default async function DashboardPage() {
         {user && (myDirectives.length > 0 || myProjects.length > 0) && (
           <section className="rounded-lg border border-orange-800/60 bg-gradient-to-br from-neutral-900 to-neutral-900/60 p-4 sm:p-5">
             <h2 className="text-sm font-bold text-black uppercase tracking-wide mb-3">
-              Your Priorities Today
+              Daily Tasks
             </h2>
             {myDirectiveGroups.map((group) => (
               <div key={group.section ?? "__none"} className="mb-4">
