@@ -164,6 +164,11 @@ enum AlertStatus {
   RESOLVED
 }
 
+enum AlertResolution {
+  RESTOCKED
+  DISCONTINUED
+}
+
 // Finished-goods stock tiers — how many units are left
 enum StockLevel {
   UNDER_100
@@ -208,6 +213,10 @@ model InventoryAlert {
   rawMaterialStatus RawMaterialStatus?
   quantity          String?
   status            AlertStatus        @default(OPEN)
+  // Why it was resolved -- restocked (back on the shelf) vs discontinued
+  // (we're not carrying/making it anymore, so it shouldn't get reported
+  // as low again). Null while OPEN.
+  resolution        AlertResolution?
   reportedById      String
   reportedBy        User               @relation("AlertFiledBy", fields: [reportedById], references: [id])
   resolvedById      String?

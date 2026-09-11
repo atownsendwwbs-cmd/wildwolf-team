@@ -112,29 +112,45 @@ export default async function InventoryPage({
                           {" "}
                           · Resolved by {alert.resolvedBy.name}
                           {alert.resolvedAt ? ` · ${formatDateTime(alert.resolvedAt)}` : ""}
+                          {alert.resolution === "DISCONTINUED" ? " · Discontinued" : ""}
+                          {alert.resolution === "RESTOCKED" ? " · Restocked" : ""}
                         </>
                       )}
                     </p>
                   </div>
                   {canResolve && (
-                    <form
-                      action={
-                        alert.status === "OPEN"
-                          ? resolveAlertAction.bind(null, alert.id)
-                          : reopenAlertAction.bind(null, alert.id)
-                      }
-                    >
-                      <button
-                        type="submit"
-                        className={`text-sm px-3 py-1.5 rounded-md border shrink-0 transition-colors ${
-                          alert.status === "OPEN"
-                            ? "border-green-800 text-green-400 hover:bg-green-950/40"
-                            : "border-neutral-700 text-neutral-300 hover:bg-neutral-800"
-                        }`}
-                      >
-                        {alert.status === "OPEN" ? "Mark restocked" : "Reopen"}
-                      </button>
-                    </form>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {alert.status === "OPEN" ? (
+                        <>
+                          <form action={resolveAlertAction.bind(null, alert.id, "RESTOCKED")}>
+                            <button
+                              type="submit"
+                              className="text-sm px-3 py-1.5 rounded-md border border-green-800 text-green-400 hover:bg-green-950/40 transition-colors"
+                            >
+                              Mark restocked
+                            </button>
+                          </form>
+                          <form action={resolveAlertAction.bind(null, alert.id, "DISCONTINUED")}>
+                            <button
+                              type="submit"
+                              className="text-sm px-3 py-1.5 rounded-md border border-neutral-700 text-neutral-300 hover:bg-neutral-800 transition-colors"
+                              title="We're not carrying/making this anymore -- stop reporting it as low"
+                            >
+                              Mark discontinued
+                            </button>
+                          </form>
+                        </>
+                      ) : (
+                        <form action={reopenAlertAction.bind(null, alert.id)}>
+                          <button
+                            type="submit"
+                            className="text-sm px-3 py-1.5 rounded-md border border-neutral-700 text-neutral-300 hover:bg-neutral-800 transition-colors"
+                          >
+                            Reopen
+                          </button>
+                        </form>
+                      )}
+                    </div>
                   )}
                 </div>
               </li>

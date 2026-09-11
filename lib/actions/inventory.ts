@@ -120,12 +120,12 @@ export async function createAlertAction(
   redirect("/inventory");
 }
 
-export async function resolveAlertAction(alertId: string) {
+export async function resolveAlertAction(alertId: string, resolution: "RESTOCKED" | "DISCONTINUED") {
   const user = await requireRole(MANAGER_ROLES);
 
   await db.inventoryAlert.update({
     where: { id: alertId },
-    data: { status: "RESOLVED", resolvedById: user.id, resolvedAt: new Date() },
+    data: { status: "RESOLVED", resolution, resolvedById: user.id, resolvedAt: new Date() },
   });
 
   revalidatePath("/inventory");
@@ -137,7 +137,7 @@ export async function reopenAlertAction(alertId: string) {
 
   await db.inventoryAlert.update({
     where: { id: alertId },
-    data: { status: "OPEN", resolvedById: null, resolvedAt: null },
+    data: { status: "OPEN", resolution: null, resolvedById: null, resolvedAt: null },
   });
 
   revalidatePath("/inventory");
