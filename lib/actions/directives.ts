@@ -5,6 +5,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireRole, getCurrentUser } from "@/lib/auth";
 import { notifyUser } from "@/lib/push";
+import { parseDirectiveBlock } from "@/lib/directives";
 
 // Directives and special projects are Admin-only to write — not even
 // Managers can touch them, per how this feature is meant to work: one
@@ -55,6 +56,53 @@ export async function addDirectiveAction(
   revalidatePath("/");
   revalidatePath(`/admin/directives/${parsed.data.userId}`);
   return {};
+}
+
+export type BulkDirectiveFormState = { error?: string; success?: string };
+
+// Paste-a-whole-list import -- parses "Section: X" + numbered/bulleted
+// lines into individual Directive rows in one submission. Always appends
+// after whatever's already there; never replaces or deletes anything.
+export async function bulkAddDirectivesAction(
+  _prevState: BulkDirectiveFormState,
+  formData: FormData
+): Promise<BulkDirectiveFormState> {
+  const admin = await requireRole(["ADMIN"]);
+  const userId = String(formData.get("userId") ?? "").trim();
+  const raw = String(formData.get("block") ?? "");
+  if (!userId) return { error: "Missing user" };
+
+  const parsed = parseDirectiveBlock(raw);
+  if (parsed.length === 0) {
+    return { error: "Couldn't find any numbered or bulleted lines to import." };
+  }
+
+  const [last, person] = await Promise.all([
+    db.directive.findFirst({ where: { userId }, orderBy: { sortOrder: "desc" } }),
+    db.user.findUnique({ where: { id: userId }, select: { name: true } }),
+  ]);
+  let nextOrder = (last?.sortOrder ?? 0) + 1;
+
+  await db.directive.createMany({
+    data: parsed.map((p) => ({
+      userId,
+      text: p.text,
+      section: p.section,
+      sortOrder: nextOrder++,
+      createdById: admin.id,
+    })),
+  });
+
+  await notifyUser(userId, admin.id, {
+    EN: { title: "New priorities from your Admin", body: `${parsed.length} new items added`, url: "/" },
+    ES: { title: "Nuevas prioridades de tu Administrador", body: `${parsed.length} elementos nuevos agregados`, url: "/" },
+  }).catch(() => {});
+
+  revalidatePath("/");
+  revalidatePath(`/admin/directives/${userId}`);
+  return {
+    success: `Added ${parsed.length} directive${parsed.length === 1 ? "" : "s"}${person ? ` for ${person.name}` : ""}.`,
+  };
 }
 
 export async function updateDirectiveAction(id: string, formData: FormData) {

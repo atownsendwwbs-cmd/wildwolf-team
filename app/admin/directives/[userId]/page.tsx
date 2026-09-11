@@ -14,6 +14,7 @@ import {
   reopenProjectAction,
 } from "@/lib/actions/directives";
 import DirectiveAddForm from "./directive-add-form";
+import BulkAddForm from "./bulk-add-form";
 import ProjectAddForm from "./project-add-form";
 
 export default async function AdminDirectivesPage({
@@ -135,6 +136,8 @@ export default async function AdminDirectivesPage({
             <option key={s} value={s} />
           ))}
         </datalist>
+        <BulkAddForm userId={userId} />
+        <p className="text-xs text-neutral-600 mb-2">— or add one at a time —</p>
         <DirectiveAddForm userId={userId} />
       </section>
 
