@@ -41,7 +41,7 @@ export default async function WarehouseReportDetailPage({
         <Section title="Shipments received" body={report.shipments} />
         <Section title="Rack / product location changes" body={report.rackChanges} />
         <Section title="Cleaning" body={report.cleaning} />
-        <Section title="Notes" body={report.notes} />
+        <Section title="General" body={report.notes} />
       </div>
     </AppShell>
   );

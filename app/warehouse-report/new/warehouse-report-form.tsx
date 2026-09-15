@@ -48,12 +48,15 @@ export default function WarehouseReportForm() {
 
       <div>
         <label className="block text-sm font-medium text-neutral-300 mb-2">
-          Anything else worth flagging <span className="text-neutral-500">(optional)</span>
+          General <span className="text-neutral-500">(optional)</span>
         </label>
+        <p className="text-xs text-neutral-500 mb-2">
+          Anything else worth reporting that doesn&apos;t fit the specific sections above.
+        </p>
         <textarea
           name="notes"
-          rows={3}
-          placeholder="Anything big that happened today that doesn't fit above"
+          rows={4}
+          placeholder="Anything big that happened today, general observations, equipment issues, staffing, etc."
           className="w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>

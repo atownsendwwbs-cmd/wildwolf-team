@@ -434,7 +434,7 @@ export default async function DashboardPage() {
             className="rounded-lg border border-neutral-800 bg-neutral-900 hover:border-orange-700 hover:bg-neutral-900/80 transition-colors p-4 text-center"
           >
             <p className="font-semibold text-black text-sm">Submit warehouse report</p>
-            <p className="text-xs text-neutral-500 mt-1">Shipments, rack changes, cleaning</p>
+            <p className="text-xs text-neutral-500 mt-1">Shipments, rack changes, cleaning, general</p>
           </Link>
           {canPostBrief && (
             <Link
