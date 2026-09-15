@@ -436,6 +436,13 @@ export default async function DashboardPage() {
             <p className="font-semibold text-black text-sm">Submit warehouse report</p>
             <p className="text-xs text-neutral-500 mt-1">Shipments, rack changes, cleaning, general</p>
           </Link>
+          <Link
+            href="/time-off/new"
+            className="rounded-lg border border-neutral-800 bg-neutral-900 hover:border-orange-700 hover:bg-neutral-900/80 transition-colors p-4 text-center"
+          >
+            <p className="font-semibold text-black text-sm">Report time off / an absence</p>
+            <p className="text-xs text-neutral-500 mt-1">Sick, late, leaving early, out for the day</p>
+          </Link>
           {canPostBrief && (
             <Link
               href="/tasks/new"

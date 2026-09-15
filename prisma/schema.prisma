@@ -34,6 +34,7 @@ model User {
   alertsResolved    InventoryAlert[]   @relation("AlertResolvedBy")
   eodReports        EndOfDayReport[]
   warehouseReports  WarehouseReport[]
+  timeOffRequests   TimeOffRequest[]
   pushSubscriptions PushSubscription[]
   tasksAssigned     Task[]             @relation("TaskAssignedTo")
   tasksCreated      Task[]             @relation("TaskAssignedBy")
@@ -256,6 +257,25 @@ model WarehouseReport {
   cleaning    String?
   notes       String?
   createdAt   DateTime @default(now())
+
+  @@index([date])
+}
+
+// Submittable without signing in -- "name" is always a plain typed value,
+// submittedBy is only set if they happened to be logged in. Deliberately
+// broad: covers sick days, running late, leaving early, or a full no-show.
+// Viewing is restricted to Admin/Manager (personal reasons, not for
+// everyone to browse) but anyone can submit one.
+model TimeOffRequest {
+  id            String   @id @default(cuid())
+  name          String
+  submittedById String?
+  submittedBy   User?    @relation(fields: [submittedById], references: [id])
+  date          DateTime
+  timeNote      String?
+  reason        String
+  notes         String?
+  createdAt     DateTime @default(now())
 
   @@index([date])
 }

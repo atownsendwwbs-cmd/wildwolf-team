@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, MANAGER_ROLES } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions/auth";
 import InstallPrompt from "@/components/install-prompt";
 import NotificationOptIn from "@/components/notification-opt-in";
@@ -74,6 +74,16 @@ function TeamIcon({ className }: IconProps) {
   );
 }
 
+function TimeOffIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.75" stroke="currentColor" className={className}>
+      <rect x="3.5" y="4.5" width="17" height="16" rx="2" />
+      <path d="M3.5 9.5h17M8 3v3M16 3v3" strokeLinecap="round" />
+      <path d="M8.5 14.5 11 17l4.5-5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function ExternalLinkIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.75" stroke="currentColor" className={className}>
@@ -122,6 +132,7 @@ const TAB_COPY = {
 
 const MISC_COPY = {
   team: { EN: "Team", ES: "Equipo" },
+  timeOff: { EN: "Time Off", ES: "Tiempo Libre" },
   ops: { EN: "Production (Ops)", ES: "Producción (Ops)" },
   signIn: { EN: "Sign in", ES: "Iniciar sesión" },
   signOut: { EN: "Sign out", ES: "Cerrar sesión" },
@@ -164,6 +175,15 @@ export default async function AppShell({ children }: { children: React.ReactNode
             >
               <TeamIcon className="w-5 h-5 shrink-0" />
               {MISC_COPY.team[lang]}
+            </Link>
+          )}
+          {user && MANAGER_ROLES.includes(user.role) && (
+            <Link
+              href="/time-off"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <TimeOffIcon className="w-5 h-5 shrink-0" />
+              {MISC_COPY.timeOff[lang]}
             </Link>
           )}
           <a
@@ -228,6 +248,11 @@ export default async function AppShell({ children }: { children: React.ReactNode
             {user?.role === "ADMIN" && (
               <Link href="/admin/users" className="text-xs font-medium text-white/70 hover:text-white px-2">
                 {MISC_COPY.team[lang]}
+              </Link>
+            )}
+            {user && MANAGER_ROLES.includes(user.role) && (
+              <Link href="/time-off" className="text-xs font-medium text-white/70 hover:text-white px-2">
+                {MISC_COPY.timeOff[lang]}
               </Link>
             )}
             {user && <LanguagePreference initial={user.preferredLang} />}
