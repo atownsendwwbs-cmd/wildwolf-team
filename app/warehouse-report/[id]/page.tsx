@@ -38,7 +38,7 @@ export default async function WarehouseReportDetailPage({
         </div>
 
         {!hasAnyContent && <p className="text-sm text-neutral-500">Nothing logged.</p>}
-        <Section title="Shipments received" body={report.shipments} />
+        <Section title="Shipments received / going out" body={report.shipments} />
         <Section title="Rack / product location changes" body={report.rackChanges} />
         <Section title="Cleaning" body={report.cleaning} />
         <Section title="General" body={report.notes} />

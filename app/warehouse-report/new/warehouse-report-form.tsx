@@ -12,12 +12,12 @@ export default function WarehouseReportForm() {
     <form action={formAction} className="space-y-8 max-w-3xl">
       <div>
         <label className="block text-sm font-medium text-neutral-300 mb-2">
-          Shipments received today <span className="text-neutral-500">(optional)</span>
+          Shipments received / going out today <span className="text-neutral-500">(optional)</span>
         </label>
         <textarea
           name="shipments"
           rows={3}
-          placeholder="What came in — supplier, what it was, anything notable"
+          placeholder="What came in and what went out — supplier/carrier, what it was, anything notable"
           className="w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
