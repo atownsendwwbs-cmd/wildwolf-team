@@ -11,7 +11,7 @@ function LineItemTable({ title, items, emptyLabel }: { title: string; items: Lin
       {items.length === 0 ? (
         <p className="text-sm text-neutral-500">{emptyLabel}</p>
       ) : (
-        <div className="rounded-lg border border-neutral-800 overflow-hidden">
+        <div className="rounded-lg border border-neutral-800 overflow-x-auto">
           <table className="w-full text-sm">
             <tbody>
               {items.map((item, i) => (

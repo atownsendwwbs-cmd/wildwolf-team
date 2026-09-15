@@ -74,6 +74,16 @@ function TeamIcon({ className }: IconProps) {
   );
 }
 
+function ExternalLinkIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.75" stroke="currentColor" className={className}>
+      <path d="M9 6H5.5a2 2 0 0 0-2 2V18.5a2 2 0 0 0 2 2H16a2 2 0 0 0 2-2V15" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13.5 3.5H20.5V10.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20 4 11 13" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 const NAV_LINKS = [
   { href: "/", Icon: DashboardIcon },
   { href: "/brief", Icon: BriefIcon },
@@ -87,6 +97,7 @@ const TAB_LINKS = [
   { href: "/", Icon: DashboardIcon },
   { href: "/brief", Icon: BriefIcon },
   { href: "/inventory", Icon: InventoryIcon },
+  { href: "/eod", Icon: EodIcon },
   { href: "/tasks", Icon: TasksIcon },
   { href: "/announcements", Icon: AnnouncementIcon },
 ] as const;
@@ -104,15 +115,19 @@ const TAB_COPY = {
   "/": { EN: "Home", ES: "Inicio" },
   "/brief": { EN: "Brief", ES: "Aviso" },
   "/inventory": { EN: "Alerts", ES: "Alertas" },
+  "/eod": { EN: "EOD", ES: "Cierre" },
   "/tasks": { EN: "Tasks", ES: "Tareas" },
   "/announcements": { EN: "News", ES: "Noticias" },
 } as const;
 
 const MISC_COPY = {
   team: { EN: "Team", ES: "Equipo" },
+  ops: { EN: "Production (Ops)", ES: "Producción (Ops)" },
   signIn: { EN: "Sign in", ES: "Iniciar sesión" },
   signOut: { EN: "Sign out", ES: "Cerrar sesión" },
 } as const;
+
+const WILDWOLF_OPS_URL = "https://wildwolf-ops.vercel.app";
 
 export default async function AppShell({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -151,6 +166,15 @@ export default async function AppShell({ children }: { children: React.ReactNode
               {MISC_COPY.team[lang]}
             </Link>
           )}
+          <a
+            href={WILDWOLF_OPS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <ExternalLinkIcon className="w-5 h-5 shrink-0" />
+            {MISC_COPY.ops[lang]}
+          </a>
         </nav>
 
         <div className="p-3 border-t border-white/10 shrink-0 space-y-3">
@@ -191,6 +215,16 @@ export default async function AppShell({ children }: { children: React.ReactNode
             <span className="font-display text-white uppercase tracking-wide">Wild Wolf</span>
           </Link>
           <div className="flex items-center gap-2 shrink-0">
+            <a
+              href={WILDWOLF_OPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={MISC_COPY.ops[lang]}
+              aria-label={MISC_COPY.ops[lang]}
+              className="text-white/70 hover:text-white p-1.5"
+            >
+              <ExternalLinkIcon className="w-[18px] h-[18px]" />
+            </a>
             {user?.role === "ADMIN" && (
               <Link href="/admin/users" className="text-xs font-medium text-white/70 hover:text-white px-2">
                 {MISC_COPY.team[lang]}

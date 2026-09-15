@@ -33,7 +33,7 @@ export default async function AdminUsersPage() {
         <DepartmentManager departments={departments} />
       </div>
 
-      <div className="rounded-lg border border-neutral-800 overflow-hidden">
+      <div className="rounded-lg border border-neutral-800 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-neutral-900 text-neutral-400 text-xs uppercase tracking-wide">
             <tr>
