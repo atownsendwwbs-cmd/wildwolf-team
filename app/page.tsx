@@ -17,8 +17,16 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   const canPostBrief = !!user && MANAGER_ROLES.includes(user.role);
 
-  const [latestBrief, openAlerts, recentReports, myTasks, recentAnnouncements, myDirectives, myProjects] =
-    await Promise.all([
+  const [
+    latestBrief,
+    openAlerts,
+    recentReports,
+    recentWarehouseReports,
+    myTasks,
+    recentAnnouncements,
+    myDirectives,
+    myProjects,
+  ] = await Promise.all([
       db.dailyBrief.findFirst({
         orderBy: { date: "desc" },
         include: { author: { select: { name: true } } },
@@ -30,6 +38,11 @@ export default async function DashboardPage() {
         include: { reportedBy: { select: { name: true } } },
       }),
       db.endOfDayReport.findMany({
+        orderBy: { date: "desc" },
+        take: 4,
+        include: { author: { select: { name: true } } },
+      }),
+      db.warehouseReport.findMany({
         orderBy: { date: "desc" },
         take: 4,
         include: { author: { select: { name: true } } },
@@ -369,6 +382,35 @@ export default async function DashboardPage() {
               </ul>
             )}
           </section>
+
+          <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-black uppercase tracking-wide">Recent Warehouse Reports</h2>
+              <Link
+                href="/warehouse-report"
+                className="text-xs text-orange-400 hover:text-orange-300 font-medium shrink-0"
+              >
+                View all
+              </Link>
+            </div>
+            {recentWarehouseReports.length === 0 ? (
+              <p className="text-neutral-500 text-sm">No warehouse reports yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {recentWarehouseReports.map((report) => (
+                  <li key={report.id}>
+                    <Link
+                      href={`/warehouse-report/${report.id}`}
+                      className="flex items-center justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-950/40 px-3 py-2 hover:border-neutral-600 transition-colors"
+                    >
+                      <span className="text-sm text-black">{report.author.name}</span>
+                      <span className="text-xs text-neutral-500">{formatDateTime(report.date)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
 
         {/* Quick actions */}
@@ -386,6 +428,13 @@ export default async function DashboardPage() {
           >
             <p className="font-semibold text-black text-sm">Submit end-of-day report</p>
             <p className="text-xs text-neutral-500 mt-1">Packed, sorted out, notes, hand-off</p>
+          </Link>
+          <Link
+            href="/warehouse-report/new"
+            className="rounded-lg border border-neutral-800 bg-neutral-900 hover:border-orange-700 hover:bg-neutral-900/80 transition-colors p-4 text-center"
+          >
+            <p className="font-semibold text-black text-sm">Submit warehouse report</p>
+            <p className="text-xs text-neutral-500 mt-1">Shipments, rack changes, cleaning</p>
           </Link>
           {canPostBrief && (
             <Link

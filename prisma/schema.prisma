@@ -33,6 +33,7 @@ model User {
   alertsFiled       InventoryAlert[]   @relation("AlertFiledBy")
   alertsResolved    InventoryAlert[]   @relation("AlertResolvedBy")
   eodReports        EndOfDayReport[]
+  warehouseReports  WarehouseReport[]
   pushSubscriptions PushSubscription[]
   tasksAssigned     Task[]             @relation("TaskAssignedTo")
   tasksCreated      Task[]             @relation("TaskAssignedBy")
@@ -238,6 +239,23 @@ model EndOfDayReport {
   notes          String?
   leftOff        String?
   createdAt      DateTime @default(now())
+
+  @@index([date])
+}
+
+// A separate, much lighter end-of-day report for the warehouse side
+// (shipments received, rack/location changes, cleaning) -- distinct from
+// the packing-focused EndOfDayReport above.
+model WarehouseReport {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  shipments   String?
+  rackChanges String?
+  cleaning    String?
+  notes       String?
+  createdAt   DateTime @default(now())
 
   @@index([date])
 }
