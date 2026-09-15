@@ -200,6 +200,28 @@ export async function addProjectAction(
   return {};
 }
 
+export async function updateProjectAction(id: string, formData: FormData) {
+  await requireRole(["ADMIN"]);
+  const parsed = projectSchema.omit({ userId: true }).safeParse({
+    title: formData.get("title"),
+    details: formData.get("details") || undefined,
+    dueDate: formData.get("dueDate") || undefined,
+  });
+  if (!parsed.success) return;
+
+  const project = await db.specialProject.update({
+    where: { id },
+    data: {
+      title: parsed.data.title,
+      details: parsed.data.details || null,
+      dueDate: parsed.data.dueDate ? new Date(parsed.data.dueDate) : null,
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath(`/admin/directives/${project.userId}`);
+}
+
 export async function deleteProjectAction(id: string) {
   await requireRole(["ADMIN"]);
   const project = await db.specialProject.delete({ where: { id } });

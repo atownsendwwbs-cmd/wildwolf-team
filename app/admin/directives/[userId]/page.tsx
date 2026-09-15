@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import AppShell from "@/components/app-shell";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
-import { formatDate } from "@/lib/format";
 import { groupDirectives } from "@/lib/directives";
 import {
   updateDirectiveAction,
   deleteDirectiveAction,
   moveDirectiveAction,
+  updateProjectAction,
   deleteProjectAction,
   completeProjectAction,
   reopenProjectAction,
@@ -148,31 +148,55 @@ export default async function AdminDirectivesPage({
           <ul className="space-y-2 mb-4">
             {openProjects.map((p) => (
               <li key={p.id} className="rounded-lg border border-neutral-800 bg-neutral-900 p-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-black">{p.title}</p>
-                    {p.details && <p className="text-xs text-neutral-400 mt-1 whitespace-pre-wrap">{p.details}</p>}
-                    {p.dueDate && <p className="text-xs text-neutral-500 mt-1">Due {formatDate(p.dueDate)}</p>}
+                <form action={updateProjectAction.bind(null, p.id)} className="space-y-2 mb-2">
+                  <input
+                    type="text"
+                    name="title"
+                    defaultValue={p.title}
+                    maxLength={200}
+                    className="w-full rounded-md bg-neutral-950 border border-neutral-700 text-black px-2.5 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                  <textarea
+                    name="details"
+                    defaultValue={p.details ?? ""}
+                    rows={2}
+                    maxLength={4000}
+                    placeholder="Details (optional)"
+                    className="w-full rounded-md bg-neutral-950 border border-neutral-700 text-black px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      name="dueDate"
+                      defaultValue={p.dueDate ? p.dueDate.toISOString().slice(0, 10) : ""}
+                      className="rounded-md bg-neutral-950 border border-neutral-700 text-black px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    <button
+                      type="submit"
+                      className="text-xs px-2.5 py-1.5 rounded-md border border-neutral-700 text-neutral-300 hover:bg-neutral-800 transition-colors"
+                    >
+                      Save
+                    </button>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <form action={completeProjectAction.bind(null, p.id)}>
-                      <button
-                        type="submit"
-                        className="text-xs px-2.5 py-1 rounded-md border border-green-800 text-green-400 hover:bg-green-950/40 transition-colors whitespace-nowrap"
-                      >
-                        Mark done
-                      </button>
-                    </form>
-                    <form action={deleteProjectAction.bind(null, p.id)}>
-                      <button
-                        type="submit"
-                        className="text-xs px-2 py-1 rounded-md border border-red-900 text-red-400 hover:bg-red-950/40 transition-colors"
-                        title="Remove"
-                      >
-                        ✕
-                      </button>
-                    </form>
-                  </div>
+                </form>
+                <div className="flex items-center gap-2">
+                  <form action={completeProjectAction.bind(null, p.id)}>
+                    <button
+                      type="submit"
+                      className="text-xs px-2.5 py-1 rounded-md border border-green-800 text-green-400 hover:bg-green-950/40 transition-colors whitespace-nowrap"
+                    >
+                      Mark done
+                    </button>
+                  </form>
+                  <form action={deleteProjectAction.bind(null, p.id)}>
+                    <button
+                      type="submit"
+                      className="text-xs px-2 py-1 rounded-md border border-red-900 text-red-400 hover:bg-red-950/40 transition-colors"
+                      title="Remove"
+                    >
+                      ✕
+                    </button>
+                  </form>
                 </div>
               </li>
             ))}
