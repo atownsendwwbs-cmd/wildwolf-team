@@ -55,11 +55,12 @@ export default function TimeOffForm({ defaultName }: { defaultName: string }) {
 
       <div>
         <label className="block text-sm font-medium text-neutral-300 mb-2">
-          Return date <span className="text-neutral-500">(optional — for multiple days / long-term)</span>
+          Return date <span className="text-neutral-500">(when they&apos;ll be back — same day is fine for a one-day absence)</span>
         </label>
         <input
           type="date"
           name="returnDate"
+          required
           className="rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>

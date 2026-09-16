@@ -273,7 +273,7 @@ model TimeOffRequest {
   submittedBy   User?    @relation(fields: [submittedById], references: [id])
   date          DateTime
   timeNote      String
-  returnDate    DateTime?
+  returnDate    DateTime
   reason        String
   notes         String?
   createdAt     DateTime @default(now())

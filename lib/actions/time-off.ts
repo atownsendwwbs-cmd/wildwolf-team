@@ -10,7 +10,7 @@ const timeOffSchema = z.object({
   name: z.string().trim().min(1, "Enter a name").max(200),
   date: z.string().trim().min(1, "Select a date"),
   timeNote: z.string().trim().min(1, "Enter a time").max(200),
-  returnDate: z.string().trim().optional(),
+  returnDate: z.string().trim().min(1, "Select a return date"),
   reason: z.string().trim().min(1, "Enter a reason").max(300),
   notes: z.string().trim().max(3000).optional(),
 });
@@ -30,7 +30,7 @@ export async function createTimeOffRequestAction(
     name: formData.get("name"),
     date: formData.get("date"),
     timeNote: formData.get("timeNote"),
-    returnDate: formData.get("returnDate") || undefined,
+    returnDate: formData.get("returnDate"),
     reason: formData.get("reason"),
     notes: formData.get("notes") || undefined,
   });
@@ -44,7 +44,7 @@ export async function createTimeOffRequestAction(
       submittedById: user?.id,
       date: new Date(`${parsed.data.date}T12:00:00`),
       timeNote: parsed.data.timeNote,
-      returnDate: parsed.data.returnDate ? new Date(`${parsed.data.returnDate}T12:00:00`) : null,
+      returnDate: new Date(`${parsed.data.returnDate}T12:00:00`),
       reason: parsed.data.reason,
       notes: parsed.data.notes,
     },
