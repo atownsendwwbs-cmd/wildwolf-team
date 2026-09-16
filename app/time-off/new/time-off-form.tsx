@@ -42,15 +42,25 @@ export default function TimeOffForm({ defaultName }: { defaultName: string }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-300 mb-2">
-          Time <span className="text-neutral-500">(optional)</span>
-        </label>
+        <label className="block text-sm font-medium text-neutral-300 mb-2">Time</label>
         <input
           type="text"
           name="timeNote"
+          required
           maxLength={200}
           placeholder="e.g. Leaving at 2pm, coming in around 10am, all day"
           className="w-full rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-neutral-300 mb-2">
+          Return date <span className="text-neutral-500">(optional — for multiple days / long-term)</span>
+        </label>
+        <input
+          type="date"
+          name="returnDate"
+          className="rounded-lg bg-neutral-900 border border-neutral-700 text-black px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
 

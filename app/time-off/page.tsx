@@ -33,12 +33,17 @@ export default async function TimeOffListPage() {
             <li key={r.id} className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
               <div className="flex items-baseline justify-between gap-2">
                 <h2 className="font-semibold text-black">{r.name}</h2>
-                <span className="text-xs text-neutral-500 shrink-0">{formatDate(r.date)}</span>
+                <span className="text-xs text-neutral-500 shrink-0">
+                  {formatDate(r.date)}
+                  {r.returnDate ? ` – ${formatDate(r.returnDate)}` : ""}
+                </span>
               </div>
               <p className="text-sm text-neutral-300 mt-1">
-                {r.reason}
-                {r.timeNote ? ` — ${r.timeNote}` : ""}
+                {r.reason} — {r.timeNote}
               </p>
+              {r.returnDate && (
+                <p className="text-xs text-amber-500 mt-1">Back {formatDate(r.returnDate)}</p>
+              )}
               {r.notes && <p className="text-sm text-neutral-500 mt-1 whitespace-pre-wrap">{r.notes}</p>}
               <p className="text-xs text-neutral-600 mt-2">Reported {formatDateTime(r.createdAt)}</p>
             </li>
